@@ -1,0 +1,43 @@
+server {
+  listen      80 default backlog=1024;
+  server_name default;
+  root        /var/www/html/dist;
+
+  client_max_body_size 100M;
+  fastcgi_read_timeout 1800;
+
+  location / {
+	try_files $uri $uri/ @router;
+	index  index.html index.htm;
+  }
+
+  location /status {
+     stub_status   on;
+     access_log    off;
+     allow         127.0.0.1;
+     deny          all;
+  }
+
+  location /ping {
+     access_log    off;
+     allow         all;
+     include       fastcgi_params;
+     fastcgi_param SCRIPT_FILENAME /ping;
+     fastcgi_pass  127.0.0.1:9000;
+  }
+
+  location @router {
+    rewrite ^.*$ /index.html last;
+  }
+
+  location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
+    try_files $uri /index.php;
+    expires       off;
+    etag off;
+    add_header Last-Modified $date_gmt;
+    add_header Cache-Control 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0';
+    if_modified_since off;
+    log_not_found off;
+    access_log    off;
+  }
+}

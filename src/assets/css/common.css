@@ -1,0 +1,50 @@
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 13px;
+	vertical-align: baseline;
+  font-family: "MicrosoftYaHeiSemibold","NotoSans-Regular_Bold",arial,"Lantinghei SC","Microsoft Yahei";
+  box-sizing: border-box;
+  font-style:normal;
+}
+li{list-style: none;}
+
+.weight{font-weight:600;}
+i>img{width:100%;height:100%;}
+.flex{display: flex;}
+.row{flex-flow: row;}
+.colmun{flex-flow: column;}
+
+.j-start{justify-content: flex-start;}
+.j-end{justify-content: flex-end;}
+.j-center{justify-content: center;}
+.j-between{justify-content: space-between;}
+.j-around{justify-content: space-around;}
+/*flex-start | flex-end | center | space-between | space-around*/
+.a-start{align-items: flex-start;}
+.a-end{align-items: flex-end;}
+.a-center{align-items: center;}
+.a-baseline{align-items: baseline;}
+.a-stretch{align-items: stretch;}
+/*flex-start | flex-end | center | baseline | stretch;*/
+
+.hiddenT{
+  overflow: hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
+}
+
+

@@ -1,0 +1,239 @@
+<template>
+  <div>
+      <div class="main-content">
+          <h1 class="compare-fee">运费对比</h1>
+          <div class="select-origan">
+              <label style="font-size: 16px;">发货国</label>
+              <el-select v-model="defalutOri" filterable style="width: 500px; margin-left: 20px;">
+                <el-option
+                  v-for="(item,index) in originList"
+                  :label="item"
+                  :value="index"
+                  :key="index"
+                  >
+                </el-option>
+              </el-select>
+          </div>
+          <div class="download-part">
+                <a class="download-template" @click="downloadFile()">下载模版</a>
+                <span class="expresive-template" @click="expreienceTemplate()">体验样版</span>
+          </div>
+          <div class="upload-box">
+              <el-upload
+                  id="upload-excel"
+                  action="upload"
+                  drag
+                  :multiple="false"
+                  :limit= "1"
+                  :on-change="beforeUpload"
+                  style="width:100%;">
+                  <i class="el-icon-upload"></i>
+                  <div class="el-upload__text">点击或将单个文件拖拽到这里上传
+                      <p>只支持扩展名：xls、xlsx</p>
+                  </div>
+              </el-upload>
+              <p class="file-name">{{fileName}}</p>
+          </div>
+          <div class="submit-btn">
+              <el-button type="primary" :loading="loading" @click="newImport()">开始对比</el-button>
+          </div>
+      </div>
+      <el-dialog
+      id="errorTemplate"
+      title="信息匹配失败，请重新上传!"
+      :visible.sync="centerDialogVisible"
+      :show-close="true"
+      :lock-scroll="false"
+      :close-on-click-modal="false"
+      style="border-radius:20px;"
+      center>
+        <ul class="errorItemList">
+            <li v-for="(item,index) in errorContent" :key="index">（{{index+1}}）{{item}}</li>
+        </ul>
+      </el-dialog>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+        centerDialogVisible: false,
+        loading: false,
+        originList: [],
+        defalutOri: '',
+        sampleUrl: '/sample/Compare Sample.xlsx',
+        fileParms: '',
+        fileName: '',
+        errorContent: []
+    }
+  },
+  mounted() {
+      this.getOrigin()
+  },
+  methods: {
+      getOrigin() {
+          this.$http.get('/spider-product/on-search-products').then(res => {
+            this.originList = res.data.ori
+            this.defalutOri = Object.keys(res.data.ori)[0]
+          })
+      },
+      downloadFile() {
+        let _Url = process.env.BASE_API
+        _Url += this.sampleUrl
+        window.location.href = _Url
+      },
+      beforeUpload (file) {
+          var fileName=new Array()
+          fileName =file.name.split('.');
+          const extension = fileName[fileName.length-1] === 'xls'
+          const extension2 =  fileName[fileName.length-1]=== 'xlsx'
+          const isLt2M = file.size / 1024 / 1024 < 10
+          if (!extension && !extension2) {
+              this.$message({
+                  message: '上传模板只能是xls、xlsx格式!',
+                  type: 'warning'
+              });
+          }
+          if (extension || extension2) {
+            //   console.log(file.raw)
+              this.fileName = file.raw.name
+              let fd = new FormData()
+              fd.append('origin', this.defalutOri)//随文件上传的其他参数
+              fd.append('file', file.raw)
+              this.fileParms = fd 
+              this.$message({
+                    showClose: true,
+                    message: '文件上传成功！',
+                    type: 'success'
+              });
+              return true
+          }
+          return extension || extension2
+        },
+        newImport () {
+            if(this.fileParms === ''){
+                this.$message.error('文件不能为空，请上传文件');
+                return false;
+            }
+            // console.log(this.fileParms)
+            this.loading = true
+            this.$http.post('/seller-tools/compare-file-upload', this.fileParms).then(res => {
+                let processID = res.data.message;
+                if(res.status == 200){
+                    this.$router.push({
+                      path: '/freightContrast/contrastResult',
+                      name: 'contrastResult',
+                      query: {
+                          data: processID
+                      }
+                    })
+                    this.loading = false
+                }
+            }).catch(error=>{
+                switch(error.response.data.response_code) {
+                    case 400003:
+                    this.$message.error(error.response.data.message);
+                    break;
+                    case 400004:
+                    this.centerDialogVisible = true;
+                    this.errorContent = error.response.data.message
+                    break;
+                }
+                this.loading = false
+            })
+        },
+        expreienceTemplate() {
+            this.$http.get('/seller-tools/compare-file-sample').then(res => {
+                // console.log(res.data, 'hahhah')
+                let processID = res.data.message;
+                if(res.status == 200){
+                    this.$router.push({
+                      path: '/freightContrast/contrastResult',
+                      name: 'contrastResult',
+                      query: {
+                          data: processID
+                      }
+                    })
+                }
+            })
+        }
+      }
+}
+
+</script>
+
+<style scoped>
+    .main-content{
+      width: 950px;
+      margin: 50px auto;
+    }
+    .compare-fee{
+      line-height:24px;
+      margin-bottom: 30px;
+      text-align: center;
+      font-size:18px;
+      font-weight: bold;
+      color: #333333;
+    }
+    .select-origan, .download-part{
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .download-template{
+      display: inline-block;
+      width: 120px;
+      line-height: 36px;
+      background: #2F9AC0;
+      border-radius: 20px;
+      font-size: 16px;
+      color: #ffffff;
+      outline: none;
+      border: none;
+      cursor: pointer;
+    }
+    .expresive-template{
+      font-size:16px;
+      color: #2F9AC0;
+      line-height:21px;
+      margin-left: 15px;
+      cursor: pointer;
+    }
+    .upload-box{
+      margin-top: 80px;
+      min-height: 246px;
+      background-color: #FCFCFC;
+    }
+    .submit-btn{
+      text-align: center;
+    }
+    .submit-btn button{
+      display: inline-block;
+      width:300px;
+      height:50px;
+      margin-top: 70px;
+      background:rgba(47,154,192,1) linear-gradient(138deg,rgba(47,183,192,1) 0%,rgba(47,154,192,1) 100%);
+      border-radius:30px;
+      color: #ffffff;
+      font-size: 20px;
+      outline: none;
+      border: none;
+    }
+    .file-name{
+        margin-top: 30px;
+        padding: 0 20px;
+    }
+    .errorItemList{
+        margin: 0 auto;
+        max-height: 380px;
+        padding-left: 20px;
+        overflow-y: auto;
+    }
+    .errorItemList>li{
+        padding: 5px 0;
+        font-size: 14px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>
