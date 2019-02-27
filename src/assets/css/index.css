@@ -29,6 +29,7 @@ body{
 
 label{
   font-weight: normal;
+  
 }
 
 li{list-style: none;}
@@ -42,6 +43,7 @@ a:link,a:visited,a:active,a:hover{text-decoration:none;color:inherit;}
     display: flex;         /* 新版本语法: Opera 12.1, Firefox 22+ */
 }
 .rows{flex-flow: row wrap;}
+.rown{flex-flow: row nowrap;}
 .columns{flex-flow: column;}
 
 .j-start{justify-content: flex-start;}
@@ -61,6 +63,7 @@ a:link,a:visited,a:active,a:hover{text-decoration:none;color:inherit;}
   overflow: hidden;
 text-overflow:ellipsis;
 white-space: nowrap;
+
 }
 .letter-box{
   padding: 3px;
@@ -339,7 +342,10 @@ input[type="number"]{
 .el-upload__input{
   display: none !important;
 }
-
+.gm-ui-hover-effect{
+  display: none !important;
+}
+/*地图关闭图标*/
 #upload-excel .el-upload-dragger{
   border: none;
   width: 100%;
@@ -424,24 +430,24 @@ input[type="number"]{
      {
          width: 6px;
          height: 6px;
-         background-color: #F4F4F4;
+         background-color: #Fff;
          cursor:pointer;
      }
       
      /*定义滚动条轨道 内阴影+圆角*/
      .scrollbar::-webkit-scrollbar-track
      {
-         border-radius: 3px;
-         background-color: #F4F4F4;
+         border-radius: 6px;
+         background-color: #Fff;
      }
       
      /*定义滑块 内阴影+圆角*/
      .scrollbar::-webkit-scrollbar-thumb
      {
-         border-radius: 3px;
+         border-radius: 6px;
          background-color: #2F9AC0;
      }
-
+ .scrollnone::-webkit-scrollbar {display:none}
  .el-tooltip__popper.is-dark {
       background: #fff;
       color: #2F9AC0;
@@ -449,4 +455,23 @@ input[type="number"]{
   }
   .el-tooltip__popper .popper__arrow{
     display: none;
+  }
+
+  .el-carousel__indicators{
+    display: none;
+  }
+  .el-carousel__container{
+    height:700px;
+  }
+
+  .el-carousel__arrow{
+    background-color:#2F9AC0;
+  }
+  .el-icon-arrow-right:before {
+    
+    color:white;
+  }
+  .el-icon-arrow-left:before{
+   
+    color:white;
   }

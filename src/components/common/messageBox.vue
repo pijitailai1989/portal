@@ -1,14 +1,14 @@
 <template>
-  <div class="messageBox flexs a-center j-center">
+  <div class="messageBox flexs a-center j-center"  @click="clickClose">
       <div>
-       <header >
+       <header  @click.stop="">
            <slot name="header"></slot>
            <i @click="clickClose" class="iconfont icon-cha" style="color:white;font-size:24px;" />
        </header>
-       <main>
+       <main @click.stop="">
            <slot></slot>
        </main>
-       <footer>
+       <footer @click.stop="">
            <slot name="footer"></slot>
        </footer>
       </div>

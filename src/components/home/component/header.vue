@@ -38,24 +38,31 @@
                     </div>
                     <div class="collapse navbar-collapse nav-wil" id="navbar-collapse">
                         <ul class="nav navbar-nav navbar-left">
-                            <li><router-link to="/" :class="{'active' : $router.history.current.path === '/'}">{{nav.home}}</router-link></li>
+                            <!-- <li><router-link to="/" :class="{'active' : $router.history.current.path === '/'}">{{nav.home}}</router-link></li> -->
                             <!-- <li><router-link to="/" class="routerTag">{{nav.service}}</router-link></li> -->
-                            <li class="mine-order">
+                            <!-- <li class="mine-order">
                               <a :class="{'active' : $router.history.current.path === '/cargo'}"  exact>{{nav.service}}</a>
                               <ol class="dropdown-submenu" style="left: 50%; margin-left: -60px;">
                                  <li><router-link to="/cargo">{{nav.cargoTracking}}</router-link></li>
                                  <li><router-link to="/freightContrast">{{nav.freightContrast}}</router-link></li>
                                  <li><router-link to="/menu/logisticsService#calculator">{{nav.freightCalculator}}</router-link></li>
                               </ol>
-                            </li>
+                            </li> -->
                             <!-- <li><router-link to="/cargo" class="routerTag">货物追踪</router-link></li> -->
                             <!-- <li><router-link to="/cargo" :class="{'active' : $router.history.current.path === '/cargo'}">{{nav.cargoTracking}}</router-link></li> -->
 
                             <!-- <li><router-link to="/menu/personalCenter"  :class="{'active' : $router.history.current.path === '/menu/personalCenter'}">个人中心</router-link></li> -->
-                            <li><router-link to="/" class="routerTag">{{nav.systemFunction}}</router-link></li>
-                            <li><router-link to="/" class="routerTag">{{nav.aboutUs}}</router-link></li>
+                            <li @click="clickTo('hz')"><router-link to="/" class="routerTag">{{news.HZ}}</router-link></li>
+                            <li @click="clickTo('fg')"><router-link to="/" class="routerTag">{{news.FG}}</router-link></li>
+                            <li @click="clickTo('pt')"><router-link to="/" class="routerTag">{{news.PL}}</router-link></li>
+                            <!--<li><router-link to="/menu/logisticsService#calculator" class="routerTag">运费计算器</router-link></li>-->
+                            <li><router-link to="/freightContrast" class="routerTag">{{news.YF}}</router-link></li>
+                            <li><a href="https://blog.spiderlocker.com" target="blog" class="routerTag">{{news.BK}}</a></li>
+                            <li><a href="https://developer.spiderparcel.com" target="blog" class="routerTag">API</a></li>
+                            <!-- <li><router-link to="/" class="routerTag">关于我们</router-link></li> -->
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
+                        <!--
                             <li><router-link to="/menu/orderCreate" :class="{'active' : $router.history.current.path === '/menu/orderCreate'}">{{nav.createOrder}}</router-link></li>
                             <li class="mine-order">
                               <router-link to="/" class="routerTag">{{nav.myOrder}}</router-link>
@@ -75,11 +82,12 @@
                                 <li><a :href="baseURL+'/logout'">{{nav.logout}}</a></li>
                               </ol>
                             </li>
+                         -->
                             <li>
                               <a>
-                                 <span @click="toggleLang('zh')" :style="{color:$i18n.locale == 'zh'?'#F4B33D':''}">中文</span> 
-                                 / 
-                                 <span @click="toggleLang('en')" :style="{color:$i18n.locale == 'en'?'#F4B33D':''}">English</span>
+                                 <span @click="toggleLang('en')" :style="{color:$i18n.locale == 'en'?'#F4B33D':''}" :class="[$i18n.locale == 'en'?'active':'']">English</span>
+                                  |  
+                                 <span @click="toggleLang('zh')" :style="{color:$i18n.locale == 'zh'?'#F4B33D':''}" :class="[$i18n.locale == 'zh'?'active':'']">繁体中文</span> 
                               </a>
                             </li>
                         </ul>
@@ -109,7 +117,10 @@ export default {
   computed:{
      nav(){
        return this.$t('nav')
-     }
+     },
+     news(){
+       return this.$t('news')
+      },
   },
   mounted() {
     this.getUserInfor()
@@ -117,7 +128,9 @@ export default {
     this.addBgcolor()
   },
   methods: {
-    
+    clickTo(str){
+      this.$emit('postFn',str)
+    },
     toggleLang(lang) {
       let en = this.$i18n.locale;
       if(en != lang){
@@ -279,8 +292,9 @@ export default {
     font-size: 16px;
     cursor: pointer;
   }
-
-
+  .navbar-nav > li > a span.active{
+    cursor: not-allowed;
+  }
   .logo-title span{
     font-size: 30px;
     color: #ffffff;
@@ -338,7 +352,7 @@ export default {
     }
 
     .navbar-nav > li > a {
-      padding: 15px 10px;
+      padding: 15px 5px;
     }
 
     nav li a.active::after{
@@ -397,10 +411,11 @@ export default {
 
     .navbar-toggle {
         height: 0;
+        
     }
 
     .navbar-nav > li > a {
-      padding: 38px 15px;
+      padding: 38px 6px;
     }
 
     nav li a.active::after{
@@ -433,7 +448,7 @@ export default {
     }
 
     .navbar-nav > li > a {
-      padding: 38px 15px;
+      padding: 38px 10px;
     }
 
     nav li a.active::after{
@@ -569,6 +584,7 @@ export default {
 
     .mine-order:hover > .dropdown-submenu{
       display: block;
+      
     }
 
     .userName{

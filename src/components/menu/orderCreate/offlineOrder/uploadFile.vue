@@ -63,8 +63,7 @@
                         v-for="(item,index) in originList"
                         :label="item"
                         :value="index"
-                        :key="index"
-                        >
+                        :key="index">
                         </el-option>
                     </el-select>
                 </div>
@@ -77,7 +76,7 @@
               <!-- <upload-file/> -->
           </form>
           <div class="upload-btn">
-              <el-button type="primary" :loading="loading" @click.native="onUploadFile($event,2)">开始上传</el-button>
+              <el-button type="primary" :loading="loading" @click.native="onUploadFile($event)">开始上传</el-button>
               <!-- <button>上传</button> -->
           </div>
       </div>
@@ -94,7 +93,6 @@ export default {
     data() {
         return {
             loading: false,
-            originList: ['中国','日本','美国'],
             defalutOri: '',
             fileName: '',
             files: '',
@@ -217,22 +215,21 @@ export default {
                 this.$http.post('/multiple-quote/custom-excel', formData).then(res => {
                     if(res.status === 200){
                         this.loading = false
-                        this.changeFn (status)
+                        this.changeFn (2)
                         console.log(res.data, '上次上传格式')
                         sessionStorage.setItem("uploadFile",JSON.stringify(res.data));
                     }
                 }).catch(error=>{
-                switch(error.response.data.response_code) {
-                    case 400003:
-                    this.$message.error(error.response.data.message);
-                    break;
-                    case 400004:
-                    this.centerDialogVisible = true;
-                    this.errorContent = error.response.data.message
-                    break;
-                }
-                this.loading = false
-            })
+                    switch(error.response.data.response_code) {
+                        case 400003:
+                        this.$message.error(error.response.data.message)
+                        break;
+                        case 400004:
+                        this.errorContent = error.response.data.message
+                        break;
+                    }
+                    this.loading = false
+                })
                 break;
                 case 'custom':
                 delete sessionData.id
@@ -240,69 +237,47 @@ export default {
                 this.$http.post('/multiple-quote/custom-excel', formData).then(res => {
                     if(res.status === 200){
                         this.loading = false
-                        this.changeFn (status)
+                        this.changeFn (2)
                         console.log(res.data, '自定义格式')
                         sessionStorage.setItem("uploadFile",JSON.stringify(res.data));
                     }
                 }).catch(error=>{
-                switch(error.response.data.response_code) {
-                    case 400003:
-                    this.$message.error(error.response.data.message);
-                    break;
-                    case 400004:
-                    this.centerDialogVisible = true;
-                    this.errorContent = error.response.data.message
-                    break;
-                }
-                this.loading = false
-            })
+                    switch(error.response.data.response_code) {
+                        case 400003:
+                        this.$message.error(error.response.data.message);
+                        break;
+                        case 400004:
+                        this.errorContent = error.response.data.message
+                        break;
+                    }
+                    this.loading = false
+                })
                 break;
                 default:
                 this.$http.post('/multiple-quote/product', formData).then(res => {
                     if(res.status === 200){
                         this.loading = false
-                        this.changeFn (status)
+                        this.changeFn (3)
                         console.log(res.data, '固定模板')
                     }
                 }).catch(error=>{
-                switch(error.response.data.response_code) {
-                    case 400003:
-                    this.$message.error(error.response.data.message);
-                    break;
-                    case 400004:
-                    this.centerDialogVisible = true;
-                    this.errorContent = error.response.data.message
-                    break;
-                }
-                this.loading = false
-            })
+                	console.log(error.response.data,'错误信息')
+                    switch(error.response.data.response_code) {
+                        case 400003:
+                        this.$message.error(error.response.data.message);
+                        break;
+                        case 400004:
+                        this.$message.error(String(error.response.data.message));
+                        break;
+                    }
+                    this.loading = false
+                })
             }
-            // this.$http.post('/multiple-quote/product', formData).then(res => {
-            //     // 如果没有选择官方或者是平台的模板，要到第二步去匹配表格信息
-            //     if(res.status == 200){
 
-            //         this.loading = false
-            //     }else{
-            //         // 如果选择官方或者是平台的模板，直接跳到第三步选择物流
-
-            //     }
-            //     // 错误处理
-            // }).catch(error=>{
-            //     switch(error.response.data.response_code) {
-            //         case 400003:
-            //         this.$message.error(error.response.data.message);
-            //         break;
-            //         case 400004:
-            //         this.centerDialogVisible = true;
-            //         this.errorContent = error.response.data.message
-            //         break;
-            //     }
-            //     this.loading = false
-            // })
         }
         ,changeFn (type) {
-          this.currentData = type
-          this.$emit('change-type', type) // 用来触发父组件定义的@change-type
+            this.currentData = type
+            this.$emit('change-type', type) // 用来触发父组件定义的@change-type
        }
     }
 }

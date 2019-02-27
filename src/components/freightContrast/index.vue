@@ -3,16 +3,16 @@
     <header>
         <HeaderCmp/>   
     </header>
-    <section class="container flexs" style="padding: 0;">
+    <section class="container flexs" style="padding: 0;height:calc( 100vh - 175px )">
         <main>
             <!-- <Breadcrumb/> -->
             <router-view></router-view>
         </main>
     </section>
     <footer>
-        <Footers></Footers>
+        <!-- <Footers></Footers> -->
         <div class="copy flexs a-center j-center">
-          <span class="flexs a-center j-center">版权所有： 2018 搜派 Spider All Rights Reserved ICP备10005645</span>
+          <span class="flexs a-center j-center">{{materialBenefits.copyRight}}：2019 {{nav.logoName}} All Rights Reserved</span>
         </div>
     </footer>
   </div>
@@ -28,7 +28,18 @@ export default {
     return {
     }
   },
-
+  computed:{
+    
+    materialBenefits(){
+        return this.$t('homeMaterialBenefits')
+    },
+    nav(){
+       return this.$t('nav')
+     },
+     news(){
+       return this.$t('news')
+     }
+  },
   components: {
       HeaderCmp,
       Breadcrumb,

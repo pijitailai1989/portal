@@ -21,60 +21,51 @@ export default {
       GetProductInfo:[],
       result:{},
       products:[],
-      total_cost:{}
+      total_cost:{},
+      country_list:[],
+      overview:{},
+      lastmileList:[],
+      regionLocation:[],
+      backGo:false,
+      rateCard:[],
+      priceList:[],
+      lastmileCountry:[],
+      scrollArr:[],
+      nextLocationList:[],
+      searchArr:[],
+      mapCountry:[],
+      lastmileRate:{}
     }
   },
   getters: {
+    // // find the weight break
+        //   var rate_break = [];
+        //   response.data.rate_card.forEach(function(rate, idx) {
+        //       rate.rate.forEach(function(b, j) {
+        //         rate_break.push(b.weight_from);
+        //         rate_break.push(b.weight_to);
+        //       });
+        //   });
+
+        //   // sort and remove duplicated weight point
+        //   rate_break = rate_break.sort(function(a, b){return a - b}).filter(function(item, pos, ary) {return !pos || item != ary[pos - 1];});
+        //   // build the weight break column
+        //   rate_break = rate_break.map(function(r, pos, ary) {
+        //     if (pos < ary.length - 1)
+        //       return {"ctl": ary[pos] / 1000 + 'kg - ' + ary[pos + 1] / 1000 + ' kg', "start": ary[pos], "end": ary[pos + 1]};
+        //   });
+        //   rate_break.pop();
+        //   // fill in the price of each weight break
+        //   response.data.rate_card.forEach(function(rate, idx) {
+        //       rate.rate.forEach(function(b, j) {
+        //         for (var i = 0; i < rate_break.length; i++) {
+        //           if (rate_break[i].start >= b.weight_from || b.weight_to <= rate_break[i].end)
+        //             rate_break[i]["rate" + idx] = response.data.currency + " " + b.cost;
+        //         }
+        //       });
+        //   });
+    
     tableContent:state=>{
-      //  let head = state.data.result.table_head
-
-      //  let arr = state.data.result.table_content
-
-      //  if(arr.length>=1){
-
-      //    arr.forEach(el=>{
-      //      el.sort=0;
-      //      let pro = el.products
-      //      if(pro.length>=1){
-              
-      //        pro.forEach(item=>{
-
-      //          if(el.best_price_product==item.product_id){
-      //             item.best_price_product=1
-      //          }else{
-      //             item.best_price_product=0
-      //          }
-
-      //          if(el.fastest_product==item.product_id){
-      //             item.fastest_product=1
-      //          }else{
-      //             item.fastest_product=0
-      //          }
-
-      //          if(el.highest_score_product==item.product_id){
-      //           item.highest_score_product=1
-      //          }else{
-      //             item.highest_score_product=0
-      //          }
-
-      //          if(el.choose==item.product_id){
-      //           item.choose=1
-      //          }else{
-      //             item.choose=0
-      //          }
-
-      //          item.currency=el.currency;
-
-      //          head.forEach(todo=>{
-      //           if(item.product_id==todo.product_id){
-      //             Object.assign(item, todo);
-      //           }
-      //          })
-               
-      //        })
-      //      }
-      //    })
-      //  }
        return state.result.table_content
     },
     tableHead:state=>{
@@ -82,9 +73,152 @@ export default {
     },
     totalCost:state=>{
       return state.total_cost
-    }
+    },
+
   },
   mutations: {
+    getLastmileRate(state,data){
+
+      state.lastmileRate=data
+      // console.log(state.lastmileRate,'state.lastmileRate')
+    },
+    getLastmileMapcountry(state,data){
+      state.mapCountry=data
+    },
+    gitLastmileSearch(state,data){
+      state.searchArr=data
+    },
+    gitNextLocationList(state,data){
+      state.nextLocationList=data
+    },
+    getScroll(state,data){
+      state.scrollArr=data
+    },
+    getLastmileCountry(state,data){
+      state.lastmileCountry=data
+    },
+    setPriceList(state,data){
+      let arr=[]
+      data.rate_card.forEach(function(rate, idx) {
+              rate.rate.forEach(function(b, j) {
+                arr.push(b.weight_from);
+                arr.push(b.weight_to);
+              });
+          });
+
+       arr = arr.sort(function(a, b){return a - b}).filter(function(item, pos, ary) {return !pos || item != ary[pos - 1];});
+
+       arr = arr.map(function(r, pos, ary) {
+            if (pos < ary.length - 1)
+              return {"ctl": ary[pos] / 1000 + 'kg - ' + ary[pos + 1] / 1000 + ' kg', "start": ary[pos], "end": ary[pos + 1]};
+          });
+      arr.pop();
+      data.rate_card.forEach(function(rate, idx) {
+                  rate.rate.forEach(function(b, j) {
+                    for (var i = 0; i < arr.length; i++) {
+                      if (arr[i].start >= b.weight_from || b.weight_to <= arr[i].end)
+                        arr[i]["rate" + idx] = data.currency + " " + b.cost;
+                    }
+                  });
+              });
+
+      state.priceList=arr
+      // console.log(state.priceList)
+    },
+    getRateCard(state,data){
+      state.rateCard=data
+    },
+    setback(state,data){
+      state.backGo=data
+    },
+    getRegionLocation(state,date){
+      let arr=[]
+      if(date.length>=1){
+
+      
+        date.forEach(function(data) {
+        data.geo_json.features.forEach(function(feature) {
+          if (feature.geometry.type === 'MultiPolygon') {
+            feature.geometry.coordinates.forEach(function(coordinates) {
+              arr.push({
+                "id" : data.location_code,
+                "name" : data.name_multi_language.local,
+                "paths" : coordinates.map(linearRing => linearRing.slice(0, linearRing.length - 1).map(([lng, lat]) => ({lat, lng}))),
+                "next_level" : data.has_next_level
+              });
+            });
+          } else if (feature.geometry.type === 'Polygon') {
+            arr.push({
+              "id" : data.location_code,
+              "name" : data.name_multi_language.local,
+              "paths" : feature.geometry.coordinates.map(linearRing => linearRing.slice(0, linearRing.length - 1).map(([lng, lat]) => ({lat, lng}))),
+              "next_level" : data.has_next_level
+            });
+          }
+        });
+      });
+      }
+      state.regionLocation=arr
+    },
+    getRegionLocation1(state,date){
+      let arr=[]
+      if(date.length>=1){
+
+      
+        date.forEach(function(data) {
+        data.geo_json.features.forEach(function(feature) {
+          if (feature.geometry.type === 'MultiPolygon') {
+            feature.geometry.coordinates.forEach(function(coordinates) {
+              arr.push({
+                "id" : data.location_code,
+                "name" : data.name_multi_language ? data.name_multi_language.local : '-',
+                "paths" : coordinates.map(linearRing => linearRing.slice(0, linearRing.length - 1).map(([lng, lat]) => ({lat, lng}))),
+                "next_level" : false
+              });
+            });
+          } else if (feature.geometry.type === 'Polygon') {
+            arr.push({
+              "id" : data.location_code,
+              "name" : data.name_multi_language ? data.name_multi_language.local : '-',
+              "paths" : feature.geometry.coordinates.map(linearRing => linearRing.slice(0, linearRing.length - 1).map(([lng, lat]) => ({lat, lng}))),
+              "next_level" : false
+            });
+          }
+        });
+      });
+      }
+      state.regionLocation=arr
+    },
+    getLastmileList(state,data){
+      if(data.length>0){
+        data.forEach(el=>{
+          el.icon=0;
+        })
+      }
+      state.lastmileList=data
+    },
+    setLastmileList(state,val){
+      state.lastmileList.forEach(el=>{
+        if(el.lastmile_name==val.name){
+          el.icon=val.icon;
+        }
+      })
+      // console.log(state.lastmileList,'state.lastmileList')
+    },
+    setsearchArr(state,val){
+      state.searchArr.forEach(el=>{
+        if(el.lastmile_name==val.name){
+          el.icon=val.icon;
+        }
+      })
+      // console.log(state.lastmileList,'state.lastmileList')
+    },
+    getOverview(state,data){
+      state.overview=data
+    },
+    getCountrylist(state,data){
+      state.country_list=data
+    },
     setTotalCost(state,data){
       if(!data){
         state.total_cost.cost = state.result.total_cost.price.cost
@@ -167,7 +301,7 @@ export default {
     //提交订单.
     async ajaxPlaceOrder({commit},data) {
       let res = await axios.post('/multiple-quote/place-order',data)
-      console.log('订单提交成功！' ,res)
+      // console.log('订单提交成功！' ,res)
       return res
       
     },
@@ -258,14 +392,104 @@ export default {
       return res
     },
     
-
-    // getAxios({commit}){
-    //     axios.get('/x-ray-scan/contraband-type').then(res=>{
-    //       commit("setSeller",res.data)
-    //       console.log(res,'res')
-    //     })
-    // }
-    
-    
+   //获取物流服务点
+    async ajaxCountrylist({commit}){
+       let {data:res} = await axios.get('/last-mile/map/support-country-list')
+          commit("getCountrylist",res)
+          // console.log(res,'res')
+        return res
+    },
+    //获取物流服务点信息
+    async ajaxOverviewCountry({commit}){
+      let {data:res} = await axios.get('/last-mile/map/overview-by-country')
+         commit("getOverview",res)
+        //  console.log(res,'res')
+       return res
+    },
+    //获取国家物流服务点列表信息
+    async ajaxLastmileList({commit},data){
+      let {data:res} = await axios.get('/last-mile/map/lastmile-list-by-country?'+data)
+         commit("getLastmileList",res)
+        //  console.log(res,'res')
+       return res
+    },
+    //获取城市物流服务点列表信息
+    async ajaxLastmileListRegion({commit},data){
+      let {data:res} = await axios.get('/last-mile/map/lastmile-list-by-region/'+data)
+         commit("getLastmileList",res)
+        //  console.log(res,'res')
+       return res
+    },
+    //获取物流服务点范围
+    async ajaxRegionLocation({commit},data){
+      let {data:res} = await axios.get('/last-mile/map/region-by-location/'+data)
+         commit("getRegionLocation",res)
+        //  console.log(res,'res')
+       return res
+    },
+    //获取单个物流服务点范围
+    async ajaxLastmileCode({commit},data){
+      let {data:res} = await axios.get('/last-mile/map/lastmile-by-code/'+data)
+         commit("getRegionLocation1",res.delivery_region)
+        //  console.log(res,'res')
+       return res
+    },
+    //获取单个物流服务价格详情
+    async ajaxRateCard({commit},data){
+      let {data:res} = await axios.get('/last-mile/map/rate-card-by-lastmile-code/'+data)
+         commit("getRateCard",res.rate_card)
+         commit("setPriceList",res)
+        //  console.log(res,'res')
+       return res
+    },
+    //获取末公里国家城市
+    async ajaxLastmileCountry({commit},data){
+      let {data:res} = await axios.get('/home/last-mile/country')
+         commit("getLastmileCountry",res)
+        //  console.log(res,'res')
+       return res
+    },
+    //获取首页城市服务
+    async ajaxScroll({commit},data){
+      let {data:res} = await axios.get('/home/scroll')
+         commit("getScroll",res)
+        //  console.log(res,'res')
+       return res
+    },
+    //获取地图详情城市服务
+    async ajaxNextLocationList({commit},data){
+      let {data:res} = await axios.get('/last-mile/next-location-list/'+data)
+         commit("gitNextLocationList",res)
+        //  console.log(res,'res')
+       return res
+    },
+    //筛选城市服务
+    async ajaxLastmileSearch({commit},data){
+      let {data:res} = await axios.post('/last-mile/map/lastmile-delivery-search',data)
+         commit("gitLastmileSearch",res)
+        //  console.log(res,'res')
+       return res
+    },
+    //获取地图详情城市服务
+    async ajaxNextLocationList({commit},data){
+      let {data:res} = await axios.get('/last-mile/next-location-list/'+data)
+         commit("gitNextLocationList",res)
+        //  console.log(res,'res')
+       return res
+    },
+    //获取地图详情国家城市
+    async ajaxLastmileMapcountry({commit},data){
+      let {data:res} = await axios.get('/last-mile/map/country')
+         commit("getLastmileMapcountry",res)
+        //  console.log(res,'res')
+       return res
+    },
+    //获取物流服务运费对比
+    async ajaxLastmileRate({commit},data){
+      let {data:res} = await axios.get('/last-mile/map/compare-lastmile-rate?'+data)
+         commit("getLastmileRate",res)
+        //  console.log(res,'res')
+       return res
+    },
   }
 }

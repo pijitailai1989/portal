@@ -627,6 +627,9 @@ export default {
       
   },
   mounted() {
+      document.documentElement.scrollTop=0
+      document.body.scrollTop=0
+      window.pageYOffset=0
       this.ajaxGetress()
       this.ajaxAddress()
       if(this.GetRess.length>=1){

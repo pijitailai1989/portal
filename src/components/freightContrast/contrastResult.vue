@@ -2,13 +2,15 @@
   <div>
       <div class="display-table">
           <div class="table-tools flexs j-between">
-              <div class="orginal"><span>发货国：</span>{{origin}}</div>
+              <div class="orginal">
+                  <!--<span>发货国：</span>{{origin}}-->
+              </div>
               <a class="export-excel" @click="downloadFile()">
-                <i class="icon iconfont icon-daochu" style="color: #F4B33D;"></i>导出运费对比结果
+                <i class="icon iconfont icon-daochu" style="color: #F4B33D;"></i>{{news.DCYFDB}}
               </a>
           </div>
           <div class="table-container">
-              <div class="table-header">运费对比结果</div>
+              <div class="table-header">{{news.YFDBJG}}</div>
               <el-table
                 id="dataList"
                 :data="tableData"
@@ -17,30 +19,30 @@
       border-bottom-right-radius:10px;">
                 <el-table-column
                   prop="destination"
-                  label="收件国"
+                  :label="news.SHG"
                   align="center">
                 </el-table-column>
                 <el-table-column
-                  prop="city"
-                  label="收件城市"
+                  prop="province"
+                  :label="news.SJCS"
                   align="center">
                 </el-table-column>
-                <el-table-column
-                  prop="has_battery"
-                  label="是否带电"
-                  align="center">
-                  <template slot-scope="scope">
-                      <span>{{scope.row.has_battery === 'Y'? '是' : '否'}}</span>
-                  </template>
-                </el-table-column>
+                <!--<el-table-column-->
+                  <!--prop="has_battery"-->
+                  <!--label="是否带电"-->
+                  <!--align="center">-->
+                  <!--<template slot-scope="scope">-->
+                      <!--<span>{{scope.row.has_battery === 'Y'? '是' : '否'}}</span>-->
+                  <!--</template>-->
+                <!--</el-table-column>-->
                 <el-table-column
                   prop="weight"
-                  label="重量（g)"
+                  :label="news.WEIGHT"
                   align="center">
                 </el-table-column>
                 <el-table-column
                   prop="actual_expense"
-                  label="您的运费"
+                  :label="news.NDYF"
                   align="center">
                   <template slot-scope="scope">
                     {{scope.row.actual_currency}} {{scope.row.actual_expense}}
@@ -48,7 +50,7 @@
                 </el-table-column>
                 <el-table-column
                   prop="spider_expense"
-                  label="搜派运费"
+                  :label="news.SPYF"
                   align="center">
                   <!-- :render-header="renderHeader" -->
                   <template slot-scope="scope">
@@ -57,11 +59,11 @@
                 </el-table-column>
               </el-table>
           </div>
-          <p class="tip"><span v-if="tableItems > 1000">提示: 仅计算前1000行的对比结果</span></p>
+          <p class="tip"><span v-if="tableItems > 1000">{{news.TSJJSQ}}</span></p>
           <div class="flexs j-end">
               <ul class="fee-box">
-                  <li>你的运费总额：<b>{{currency+' '+actual_cost}}</b></li>
-                  <li>搜派运费总额：<b>{{currency}}<span class="bigger"> {{spider_cost}}</span></b></li>
+                  <li>{{news.NDYFZE}}：<b>{{currency+' '+actual_cost}}</b></li>
+                  <li>{{news.SPDYFZE}}：<b>{{currency}}<span class="bigger"> {{spider_cost}}</span></b></li>
               </ul>
           </div>
       </div>
@@ -87,7 +89,18 @@ export default {
       percentage: 0
     }
   },
-
+  computed:{
+    
+    materialBenefits(){
+        return this.$t('homeMaterialBenefits')
+    },
+    nav(){
+       return this.$t('nav')
+     },
+     news(){
+       return this.$t('news')
+     }
+  },
   mounted() {
     // this.getDatas()
     this.loadingInstance = this.$loading({
@@ -110,7 +123,7 @@ export default {
     getDatas() {
       this.Pid = this.$route.query.data
       this.$http.get('/seller-tools/compare-file-process?processID='+ this.Pid).then(res => {
-          // console.log(res.data, '')
+          console.log(res.data, '')
           if(res.data.status === 'pending') {
               this.currentItem = res.data.progress[0]
               this.totleItems = res.data.progress[1]
@@ -136,7 +149,7 @@ export default {
         _Url += this.excelUrl
         _Url += this.Did
         window.location.href = _Url
-        
+
     }
     // ,
     // renderHeader (h, params) {

@@ -6,75 +6,31 @@
           <el-form ref="form" @submit.native.prevent="searchProductsData()">
             <el-row class="from-row">
                 <el-col :span="3" class="label-title">
-                    <label class="Mandatory">{{menu.Point_origin}}</label>
-                </el-col>
-                <el-col :span="8">
-                    <el-form-item>
-                        <el-select
-                            v-model="form.region"
-                            @change="associatedDestination('default')"
-                            filterable
-                            class="custom-made"
-                            id="origin">
-                            <el-option v-for="(item,index) in originList" :label="item" :value="index" :key="index"></el-option>
-                        </el-select>
-                    </el-form-item>
-                </el-col>
-                <el-col :span="3" :offset="2" class="label-title">
                     <label class="Mandatory">{{menu.goods_to}}</label>
                 </el-col>
                 <el-col :span="4">
                     <el-form-item>
                     <el-select
-                        v-model="form.destination"
-                        @change="destinationDistrict('default')"
+                        v-model="selectedCountry"
                         filterable
                         class="custom-made"
                         style="width:113px;">
-                        <el-option v-for="(item,index) in destinationList" :label="item" :value="index" :key="index"></el-option>
+                        <el-option v-for="(item,index) in countryList" :label="item.name" :value="item.code" :key="index"></el-option>
                     </el-select>
                     </el-form-item>
                 </el-col>
                 <el-col :span="4">
                     <el-form-item>
                     <el-select
-                        v-model="form.area"
+                        v-model="selectedProvince"
                         filterable
                         class="custom-made"
                         style="width:113px;">
-                        <el-option v-for="(item,index) in areaList" :label="item" :value="item" :key="index"></el-option>
+                        <el-option v-for="(item,index) in provinceList" :label="item.name" :value="item.code" :key="index"></el-option>
                     </el-select>
                     </el-form-item>
                 </el-col>
-            </el-row> 
-            <el-row class="from-row">
-                <el-col :span="3" class="label-title">
-                    <label class="Mandatory">{{menu.Item_category}}</label>
-                </el-col>
-                <el-col :span="8">
-                    <el-form-item>
-                        <el-select
-                            v-model="form.cateogory"
-                            class="custom-made"
-                            id="cateogory">
-                            <el-option v-for="(item,index) in commodityList" :label="item" :value="index" :key="index"></el-option>
-                        </el-select>
-                    </el-form-item>
-                </el-col>
                 <el-col :span="3" :offset="2" class="label-title">
-                    <label class="Mandatory">{{menu.parcel_value}}</label>
-                </el-col>
-                <el-col :span="8">
-                    <el-form-item>
-                        <div class="custom-made">
-                            <el-input type="text"  pattern="(?!(0[0-9]{0,}$))[0-9]{1,}[.]{0,}[0-9]{0,2}" title="最多2位小数点" required="required" v-model="form.packgeValue" :placeholder="menu.Please_price"></el-input>
-                            <i class="units">￥</i>
-                        </div>
-                    </el-form-item>
-                </el-col>
-            </el-row> 
-            <el-row class="from-row">
-                <el-col :span="3" class="label-title">
                     <label  class="Mandatory">{{menu.parcel_weighs}}</label>
                 </el-col>
                 <el-col :span="8">
@@ -85,20 +41,7 @@
                         </div>
                     </el-form-item>
                 </el-col>
-                <el-col :span="3" :offset="2" class="label-title">
-                    <label class="Mandatory">{{menu.Sensitive_items}}</label>
-                </el-col>
-                <el-col :span="8">
-                    <el-form-item>
-                        <el-select
-                            v-model="form.sensitive"
-                            class="custom-made"
-                            id="origin">
-                            <el-option v-for="(item,index) in sensitveList" :label="item" :value="index" :key="index"></el-option>
-                        </el-select>
-                    </el-form-item>
-                </el-col>
-            </el-row> 
+            </el-row>
             <el-row class="from-row">
                 <el-col :span="3" class="label-title">
                     <label>{{menu.Package_size}}</label>
@@ -121,10 +64,10 @@
                         </div>
                     </el-form-item>
                 </el-col>
-            </el-row> 
+            </el-row>
             <div :span="24" style="text-align:center;">
                 <button type="submit" class="next-step">{{menu.next_step}}</button>
-            </div>       
+            </div>
         </el-form>
       </div>
     </div>
@@ -145,11 +88,12 @@
                                 :src="baseURL+scope.row.lastmile_logo"
                                 style="display: block;width: 100%; height: 100%;">
                         </div>
-                        <p style="font-size: 12px; text-align: center;">{{scope.row.product_name}}</p>
+                        <p style="font-size: 12px; text-align: center;">{{scope.row.lastmile_name}}</p>
+                        <p style="font-size: 12px; text-align: center;">{{scope.row.service_name}}</p>
                     </div>
                 </template>
             </el-table-column>
-            <el-table-column
+            <!-- <el-table-column
                 prop="name"
                 align="center"
                 :label="menu.Star_evaluation">
@@ -162,24 +106,15 @@
                     </el-rate>
                     <p class="rank-text">{{ scope.row.score }}{{menu.points}}</p>
                 </template>
-            </el-table-column>
+            </el-table-column> -->
             <el-table-column
                 prop="date"
                 :label="menu.Delivery_time"
                 align="center"
                 width="180">
                 <template slot-scope="scope">
-                    <range-slider style="width: 63%;" :min="scope.row.min_lead_time" :max="scope.row.max_lead_time"/>
-                    <p class="date-text">{{scope.row.min_lead_time}}~{{scope.row.max_lead_time}}{{menu.day}}</p>
-                </template>
-            </el-table-column>
-            <el-table-column
-                prop="name"
-                align="center"
-                width="50"
-                :label="menu.tax_package">
-                <template slot-scope="scope">
-                    <i :class="scope.row.import_tax_all_in === 'Y' ? 'el-icon-check' : 'el-icon-close'" style="padding: 1px; font-size:16px;"></i>
+                    <!-- <range-slider style="width: 63%;" :min="scope.row.claimed_min_lead_time" :max="scope.row.claimed_max_lead_time"/> -->
+                    <p class="date-text">{{scope.row.claimed_min_lead_time}}~{{scope.row.claimed_max_lead_time}}{{menu.day}}</p>
                 </template>
             </el-table-column>
             <el-table-column
@@ -187,15 +122,8 @@
                 align="center"
                 :label="menu.Estimated_freight">
                 <template slot-scope="scope">
-                    <strong v-if="scope.row.import_tax_all_in === 'Y'" class="price-tariff">￥{{scope.row.shipping_cost}} <span v-if="!(scope.row.import_tax_all_in === 'Y')">+ {{menu.tax}}</span></strong>
-                    <el-popover
-                        v-else
-                        placement="bottom"
-                        title=""
-                        trigger="hover">
-                        <p class="hover-tip">{{menu.Expected_tariff}}:￥{{scope.row.tax_and_duty}}</p>
-                        <strong slot="reference" class="price-tariff">￥{{scope.row.shipping_cost}} <span v-if="!(scope.row.import_tax_all_in === 'Y')"> + {{menu.tax}}</span></strong>
-                    </el-popover>
+                    <strong>{{scope.row.cost_currency}}</strong>
+                    <strong>{{scope.row.shipping_cost}}</strong>
                 </template>
             </el-table-column>
             <el-table-column
@@ -204,11 +132,16 @@
                 :label="menu.operation">
                 <template slot-scope="scope">
                     <!-- <el-checkbox class="opt-checkboc" name="type"></el-checkbox> -->
-                    <span v-if="scope.row.best_price && scope.row.fastest && scope.row.highest_score" class="selected-product all-perfect" @click="selectProduct">{{menu.integrated_optimal}}</span>
+                    <!-- <span v-if="scope.row.best_price && scope.row.fastest && scope.row.highest_score" class="selected-product all-perfect" @click="selectProduct">{{menu.integrated_optimal}}</span>
                     <span v-else-if="scope.row.best_price" class="selected-product single-perfect" @click="selectProduct">{{menu.best_price}}</span>
                     <span v-else-if="scope.row.fastest" class="selected-product single-perfect" @click="selectProduct">{{menu.Aging_fastest}}</span>
                     <span v-else-if="scope.row.highest_score" class="selected-product single-perfect" @click="selectProduct">{{menu.Evaluation_highest}}</span>
-                    <span v-else class="selected-product" @click="selectProduct">{{menu.choose}}</span>
+                    <span v-else class="selected-product" @click="selectProduct">{{menu.choose}}</span> -->
+                    <span v-if="scope.row.best_price && scope.row.fastest && scope.row.highest_score" class="selected-product all-perfect">{{menu.integrated_optimal}}</span>
+                    <span v-else-if="scope.row.best_price" class="selected-product single-perfect">{{menu.best_price}}</span>
+                    <span v-else-if="scope.row.fastest" class="selected-product single-perfect">{{menu.Aging_fastest}}</span>
+                    <span v-else-if="scope.row.highest_score" class="selected-product single-perfect">{{menu.Evaluation_highest}}</span>
+                    <!-- <span v-else class="selected-product">{{menu.choose}}</span> -->
                 </template>
             </el-table-column>
         </el-table>
@@ -219,139 +152,123 @@
 
 <script>
 import RangeSlider from '@/components/common/progressBar/thickBar'
-export default {  
-  components: {
-      RangeSlider
-  },
-  data() {
-    return {
-        originList: [],
-        destinationList: [],
-        areaList: [],
-        commodityList: [],
-        sensitveList: [],
-        form: {
-          region: '',
-          destination: '',
-          area: '',
-          district: '',
-          cateogory: '',
-          packgeValue: null,
-          weight: null,
-          length: null,
-          width: null,
-          height: null,
-          sensitive: ''
+export default {
+    components: {
+       RangeSlider
+    },
+    data() {
+        return {
+            selectedCountry: null,
+            selectedProvince: null,
+            countryList: [],
+            provinceList: [],
+            form: {
+              weight: null,
+              length: null,
+              width: null,
+              height: null,
+            },
+            productTable: [],
+            isEmpty: false,
+            loading: true,
+            acceptDefaults: {},
+            responseData: null
+        }
+    },
+
+    computed: {
+        menu(){
+            return this.$t('menu')
+        }
+    },
+    mounted() {
+        this.getDistrictData('default');
+        this.acceptDefaults = this.$route.params.dataObj
+        console.log(this.acceptDefaults, '收到的参数')
+    },
+	watch: {
+		selectedCountry: function () {
+			this.updateCity()
+		}
+	},
+
+    methods: {
+        getDistrictData(arg) {
+            this.$http.get('/spider-product/on-search-products').then(res => {
+                console.log(res.data, '111222333')
+                this.responseData = res.data
+	            this.countryList = res.data
+	            if(arg === 'default') {
+                    if(this.$route.params.dataObj){
+                    	console.log(this.acceptDefaults,'穿件来的参数')
+                        for (let key in res.data) {
+	                        let result = res.data[key]
+                            console.log(result,'生成的变量')
+                            console.log(this.acceptDefaults.destinationInit.code,'错误的原因')
+                            if(this.acceptDefaults.destinationInit.code === result.code){
+	                            this.selectedCountry = result.code
+                                console.log(this.selectedCountry,'结果1')
+	                            this.selectedProvince =result.province[0].code;
+	                            console.log(this.selectedProvince,'结果2')
+                                break;
+                            }
+                        }
+	                    this.form.weight = this.acceptDefaults.weightInit
+                    }
+		            this.updateCity()
+                }
+	            if(this.$route.params.dataObj){
+		            this.searchProductsData()
+	            }
+            })
         },
-        productTable: [],
-        isEmpty: false,
-        loading: true,
-        acceptDefaults: {},
-        p1: true,
-        p2: true,
-        p3: false
-    }
-  },
-
-  computed: {
-       menu(){
-          return this.$t('menu')
-        }
-  },
-
-  mounted() {
-    this.getDistrictData('default');
-    this.acceptDefaults = this.$route.params.dataObj
-    // console.log(this.$route)
-    // console.log(this.acceptDefaults, '收到的参数')
-  },
-
-  methods: {
-    getDistrictData(arg) {
-        this.$http.get('/spider-product/on-search-products').then(res => {
-            // console.log(res.data, '1111111')
-            this.originList = res.data.ori
-            this.commodityList = res.data.items
-            this.sensitveList = res.data.sitems
-            if(arg === 'default') {
-                // console.log(Object.keys(res.data.items), '00000')
-                this.form.region = Object.keys(res.data.ori)[0]
-                if(this.$route.params.dataObj){
-                    this.form.region = Object.keys(this.acceptDefaults.originInit)[0]
-                    this.form.weight = this.acceptDefaults.weightInit
-                    // console.log(this.form.region, '333')
+        updateCity() {
+            for(let i in this.responseData){
+                let obj = this.responseData[i]
+                if(obj.code === this.selectedCountry){
+                    this.provinceList = obj.province
+	                this.selectedProvince = this.provinceList[0].code;
+                    break;
                 }
-                this.form.cateogory = Object.keys(res.data.items)[0]
-                this.form.sensitive = Object.keys(res.data.sitems)[0]
-                this.associatedDestination('default')
             }
-        })
-    },
-    associatedDestination(arg) {
-        let val = this.form.region
-        this.$http.get('/address/support-dst-country?ori='+ val).then(res => {
-            this.destinationList = res.data.dst
-            if (arg === 'default') {
-                this.form.destination = Object.keys(res.data.dst)[0]
-                if(this.$route.params.dataObj){
-                    this.form.destination = Object.keys(this.acceptDefaults.destinationInit)[0]
-                    // console.log(Object.keys(this.acceptDefaults.destinationInit)[0], '4444')
+	        // this.selectedProvince = this.provinceList[0].code;
+        },
+        searchProductsData() {
+            let _this=this;
+            const data = {
+                country: this.selectedCountry,
+                weight: this.form.weight,
+                province: this.selectedProvince
+            }
+            if(_this.form.length&&_this.form.width&&_this.form.height){
+               data.dim=`${_this.form.length},${_this.form.width},${_this.form.height}`;
+            }
+            this.$http.get('/spider-product/products?' + this.$qs.stringify(data)).then(res => {
+                console.log(res.data, '产品数据')
+                this.isEmpty = true
+                if(res.status === 200 && res.data.length > 0){
+                    this.productTable = res.data
+                }else{
+                    this.productTable = []
+                    this.$message({
+                     message: '没有找到相关的信息！',
+                     type: 'success',
+                     duration:1000
+                   })
                 }
-                this.destinationDistrict('default')
-          }
-        })
-    },
-    destinationDistrict(arg) {
-        let value = this.form.destination
-        this.$http.get('/address/support-city?dst=' + value).then(res => {
-            this.areaList = res.data
-            // console.log(res.data, '地区')
-            if (arg === 'default') {
-            this.form.area = Object.values(res.data)[0]
-          }
-        })
-    },
-    searchProductsData() {
-        let _this=this;
-        const data = {
-            ori: this.form.region,
-            dst: this.form.destination,
-            item: this.form.cateogory,
-            sitem: this.form.sensitive,
-            package_value: this.form.packgeValue,
-            weight: this.form.weight,
-            city: this.form.area
-        }
-        if(_this.form.length&&_this.form.width&&_this.form.height){
-           data.dim=`${_this.form.length},${_this.form.width},${_this.form.height}`;
-        }
-        // data.dim = `${this.form.length},${this.form.width},${this.form.height}`
-        this.$http.get('/spider-product/products?' + this.$qs.stringify(data)).then(res => {
-            // console.log(res.data, '产品数据')
-            this.isEmpty = true
-            if(res.status === 200 && res.data.length > 0){
-                this.productTable = res.data
-            }else{
-                this.productTable = []
-                this.$message({
-                 message: '没有找到相关的信息！',
-                 type: 'success',
-                 duration:1000
-               })
+                this.loading = false
+            })
+        },
+        selectProduct() {
+
+            this.$router.push('/menu/orderCreate')
+            let data={
+                dst: this.selectedCountry,
+                city: this.selectedProvince
             }
-            this.loading = false
-        })
-    },
-    selectProduct() {
-        
-        this.$router.push('/menu/orderCreate')
-        let data={
-            dst: this.form.destination,
-            city: this.form.area
+            sessionStorage.setItem('params',JSON.stringify(data)  )
         }
-        sessionStorage.setItem('params',JSON.stringify(data)  )
     }
-  }
 }
 
 </script>
@@ -367,7 +284,7 @@ export default {
     }
     .chart-container{
         width: 100%;
-        height:470px;
+        /*height:470px;*/
         margin-bottom: 50px;
         padding: 56px 90px;
         background:rgba(255,255,255,1);

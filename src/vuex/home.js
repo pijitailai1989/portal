@@ -17,14 +17,21 @@ export default {
   mutations: {
     receiveOrigin(state, data) {
       state.originCountry = data
-    }
+    },
+    
   },
   actions: {
     async resOrigin({commit}) {
       let {data: res }= await axios.get('/address/support-address')
       commit("receiveOrigin",res)
     },
-
+    //立即订阅
+    async ajaxNewsletter({commit},data){
+      let {data:res} = await axios.post('/subscribe-newsletter',data)
+         
+        //  console.log(res,'res')
+       return res
+    },
     // getAxios({commit}){
     //     axios.get('/x-ray-scan/contraband-type').then(res=>{
     //       commit("setSeller",res.data)

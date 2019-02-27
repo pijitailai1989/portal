@@ -9,10 +9,10 @@ Vue.prototype.$qs = qs
 
 Vue.prototype.$http = axios
 // 开发环境
-axios.defaults.baseURL = "http://192.168.1.118:8006";
+axios.defaults.baseURL = "http://10.2.8.235:8006/";
 // 测试环境
 // axios.defaults.baseURL = process.env.BASE_API;
-axios.defaults.timeout = 100000
+axios.defaults.timeout = 300000
 axios.defaults.withCredentials = true
 // console.log(axios.defaults.headers['Accept-Language']);
 axios.defaults.headers['Content-Type'] = 'application/json'

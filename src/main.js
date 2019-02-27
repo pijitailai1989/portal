@@ -20,8 +20,32 @@ import './assets/font/iconfont.css'
 import axios from 'axios'
 import qs from 'qs'
 import VueLazyload from 'vue-lazyload'
-import L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
+import VueAnalytics from 'vue-analytics'
+//import L from 'leaflet'
+//import 'leaflet/dist/leaflet.css'
+//import icon from 'leaflet/dist/images/marker-icon.png';
+//import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+import * as VueGoogleMaps from "vue2-google-maps";
+Vue.use(VueGoogleMaps, {
+  load: {
+    key: "AIzaSyA9-OuEIxQw2IXwfkcMRXG6PA1vcnQaAVs",
+    // key: "AIzaSyDKB0AJ5PN2YxHjWlW6WzjDX5qHkJxEWW8",
+    libraries: "places" // necessary for places input
+  }
+});
+
+Vue.use(VueAnalytics, {
+  id: 'UA-131905761-2',
+	router
+});
+
+/*
+let DefaultIcon = L.icon({
+          iconUrl: icon,
+          shadowUrl: iconShadow
+      });
+L.Marker.prototype.options.icon = DefaultIcon;
 
 delete L.Icon.Default.prototype._getIconUrl
 L.Icon.Default.mergeOptions({
@@ -29,6 +53,7 @@ L.Icon.Default.mergeOptions({
   iconUrl: require('leaflet/dist/images/marker-icon.png'),
   shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 })
+*/
 
 Vue.use(VueLazyload, {
   preLoad: 1.3,
@@ -49,7 +74,7 @@ axios.defaults.withCredentials=true;
 // 测试环境
 // axios.defaults.baseURL = process.env.BASE_API;
 
-axios.defaults.timeout = 100000
+axios.defaults.timeout = 300000
 // axios.defaults.withCredentials = true
 // console.log(axios.defaults.headers['Accept-Language']);
 axios.defaults.headers['Content-Type'] = 'application/json'

@@ -13,6 +13,10 @@ export default new Router({
       component: home => require(['@/components/home/index'], home)   //首页
     },
     {
+      path: '/mapDetail',
+      component: mapDetail => require(['@/components/menu/mapDetail'], mapDetail)   //地图详情
+    },
+    {
       path: '/menu',
       component: menu => require(['@/components/menu/index'], menu),   //菜单
       children: [

@@ -533,6 +533,7 @@
            this.logisticsTable=this.table_content[curVal]
            const _this=this
            this.$nextTick(()=>{
+           this.showLr=false
            this.logisticsTable.forEach(el=>{
             // console.log(this.logisticsTable,'logisticsTable2')
             if(!el.sore){

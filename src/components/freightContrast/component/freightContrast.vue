@@ -1,22 +1,22 @@
 <template>
   <div>
       <div class="main-content">
-          <h1 class="compare-fee">运费对比</h1>
-          <div class="select-origan">
-              <label style="font-size: 16px;">发货国</label>
-              <el-select v-model="defalutOri" filterable style="width: 500px; margin-left: 20px;">
-                <el-option
-                  v-for="(item,index) in originList"
-                  :label="item"
-                  :value="index"
-                  :key="index"
-                  >
-                </el-option>
-              </el-select>
-          </div>
+          <h1 class="compare-fee">{{news.YF}}</h1>
+          <!--<div class="select-origan">-->
+              <!--<label style="font-size: 16px;">发货国</label>-->
+              <!--<el-select v-model="defalutOri" filterable style="width: 500px; margin-left: 20px;">-->
+                <!--<el-option-->
+                  <!--v-for="(item,index) in originList"-->
+                  <!--:label="item"-->
+                  <!--:value="index"-->
+                  <!--:key="index"-->
+                  <!--&gt;-->
+                <!--</el-option>-->
+              <!--</el-select>-->
+          <!--</div>-->
           <div class="download-part">
-                <a class="download-template" @click="downloadFile()">下载模版</a>
-                <span class="expresive-template" @click="expreienceTemplate()">体验样版</span>
+                <a class="download-template" @click="downloadFile()">{{news.XZMB}}</a>
+                <span class="expresive-template" @click="expreienceTemplate()">{{news.DYYB}}</span>
           </div>
           <div class="upload-box">
               <el-upload
@@ -28,19 +28,19 @@
                   :on-change="beforeUpload"
                   style="width:100%;">
                   <i class="el-icon-upload"></i>
-                  <div class="el-upload__text">点击或将单个文件拖拽到这里上传
-                      <p>只支持扩展名：xls、xlsx</p>
+                  <div class="el-upload__text">{{news.DJHJ}}
+                      <p>{{news.ZZC}}：xls、xlsx</p>
                   </div>
               </el-upload>
               <p class="file-name">{{fileName}}</p>
           </div>
           <div class="submit-btn">
-              <el-button type="primary" :loading="loading" @click="newImport()">开始对比</el-button>
+              <el-button type="primary" :loading="loading" @click="newImport()">{{news.KSDB}}</el-button>
           </div>
       </div>
       <el-dialog
       id="errorTemplate"
-      title="信息匹配失败，请重新上传!"
+      :title="news.XXPB"
       :visible.sync="centerDialogVisible"
       :show-close="true"
       :lock-scroll="false"
@@ -62,22 +62,34 @@ export default {
         loading: false,
         originList: [],
         defalutOri: '',
-        sampleUrl: '/sample/Compare Sample.xlsx',
+        sampleUrl: '/sample/Spider Last Mile Compare Template.xlsx',
         fileParms: '',
         fileName: '',
         errorContent: []
     }
   },
+  computed:{
+    
+    materialBenefits(){
+        return this.$t('homeMaterialBenefits')
+    },
+    nav(){
+       return this.$t('nav')
+     },
+     news(){
+       return this.$t('news')
+     }
+  },
   mounted() {
-      this.getOrigin()
+      // this.getOrigin()
   },
   methods: {
-      getOrigin() {
-          this.$http.get('/spider-product/on-search-products').then(res => {
-            this.originList = res.data.ori
-            this.defalutOri = Object.keys(res.data.ori)[0]
-          })
-      },
+      // getOrigin() {
+      //     this.$http.get('/spider-product/on-search-products').then(res => {
+      //       this.originList = res.data.ori
+      //       this.defalutOri = Object.keys(res.data.ori)[0]
+      //     })
+      // },
       downloadFile() {
         let _Url = process.env.BASE_API
         _Url += this.sampleUrl
@@ -99,9 +111,9 @@ export default {
             //   console.log(file.raw)
               this.fileName = file.raw.name
               let fd = new FormData()
-              fd.append('origin', this.defalutOri)//随文件上传的其他参数
+              // fd.append('origin', this.defalutOri)//随文件上传的其他参数
               fd.append('file', file.raw)
-              this.fileParms = fd 
+              this.fileParms = fd
               this.$message({
                     showClose: true,
                     message: '文件上传成功！',
@@ -133,11 +145,14 @@ export default {
             }).catch(error=>{
                 switch(error.response.data.response_code) {
                     case 400003:
-                    this.$message.error(error.response.data.message);
+                    this.$message.error(error.response.data.message)
                     break;
                     case 400004:
                     this.centerDialogVisible = true;
                     this.errorContent = error.response.data.message
+                    break;
+	                case 400005:
+                    this.$message.error(error.response.data.message)
                     break;
                 }
                 this.loading = false
@@ -177,15 +192,16 @@ export default {
       color: #333333;
     }
     .select-origan, .download-part{
-      text-align: center;
-      margin-bottom: 40px;
+      /*text-align: center;*/
+      margin-top: 80px;
     }
     .download-template{
       display: inline-block;
-      width: 120px;
+      padding:5px 20px;
       line-height: 36px;
+      text-align: center;
       background: #2F9AC0;
-      border-radius: 20px;
+      border-radius: 10px;
       font-size: 16px;
       color: #ffffff;
       outline: none;
@@ -200,7 +216,7 @@ export default {
       cursor: pointer;
     }
     .upload-box{
-      margin-top: 80px;
+      margin-top: 20px;
       min-height: 246px;
       background-color: #FCFCFC;
     }

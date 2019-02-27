@@ -14,7 +14,7 @@
       </div>
       <!-- 第三步 -->
       <div v-if="statusNum===3">
-          <SelectLogistics @posttoparent="getChild"></SelectLogistics>
+          <!-- <SelectLogistics @posttoparent="getChild"></SelectLogistics> -->
        </div>  
        <el-dialog
         :visible.sync="centerDialogVisible"
@@ -36,7 +36,7 @@
 <script>
 import PocessState from '@/components/menu/component/processState'
 import UploadFile from './uploadFile'
-import SelectLogistics from './selectLogistics'
+// import SelectLogistics from './selectLogistics'
 import matchFile from './matchFile'
 export default {
   data() {
@@ -59,7 +59,6 @@ export default {
   components: {
       PocessState,
       UploadFile,
-      SelectLogistics,
       matchFile
   },
 

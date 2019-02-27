@@ -43,6 +43,7 @@ export default {
     }
   },
   mounted(){
+      console.log(this.seriesData,'this.seriesData')
     this.drawLine();
   },
   methods: {

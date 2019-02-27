@@ -12,6 +12,6 @@ export default new Vuex.Store({
     modules:{
         home,
         menu
-    },
-    plugins: [createPersistedState()]
+    }
+    // plugins: [createPersistedState()]
 })

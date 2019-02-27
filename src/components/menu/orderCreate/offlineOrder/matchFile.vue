@@ -3,16 +3,16 @@
         <div class="flexs j-between">
             <div class="mandatory">
                 <div class="selectItemTitle">必选信息</div>
-                <ul class="selectItemsBox flexs rows">
-                    <li class="selectItems" v-for="val of must.checkbox" :key="val">{{val}}</li>
-                    <li class="selectItems" v-for="item of must.select" :key="item">{{item}}</li>
+                <ul class="selectItemsBox flexs rows" id="mustSelect">
+                    <li class="selectItems" v-for="(item,index) of must.select" :name="index" :key="item">{{item}}</li>
+                    <li class="selectItems" v-for="(val,key) of must.checkbox" :name="key" :key="val" >{{val}}</li>
                 </ul>
             </div>
             <div class="options">
                 <div class="selectItemTitle">可选信息</div>
-                <ul class="selectItemsBox flexs rows">
-                    <li class="selectItems" v-for="item of option.select" :key="item">{{item}}</li>
-                    <li class="selectItems" v-for="val of option.checkbox" :key="val">{{val}}</li>
+                <ul class="selectItemsBox flexs rows" id="optionSelect">
+                    <li class="selectItems" v-for="(item,index) of option.select" :name="index" :key="item">{{item}}</li>
+                    <li class="selectItems" v-for="(val,key) of option.checkbox" :name="key" :key="val">{{val}}</li>
                 </ul>
             </div>
         </div>
@@ -46,7 +46,7 @@
         <div class="upload-btn" style="margin-top:100px;">
             <i class="goBack">返回</i>
             <el-button type="primary" :loading="loading" @click.prevent="submitSelectData">完成</el-button>
-            <span class="saveRecord" @click="dialogVisible = true">保存上传记录</span>
+            <span class="saveRecord" @click="dialogVisible = true; newDateName()">保存上传记录</span>
         </div>
         <el-dialog
         id="template2"
@@ -55,13 +55,14 @@
         :show-close="true"
         :lock-scroll="false"
         :close-on-click-modal="false"
+        @close='closeDialog'
         style="border-radius:20px;"
         center>
             <span>
                 <el-input placeholder="请输入保存的文件的名称" v-model="saveTemplateName" clearable></el-input>
             </span>
             <span slot="footer" class="dialog-footer">
-                <button class="cancleBtn" @click="dialogVisible = false">取 消</button>
+                <button class="cancleBtn" @click="dialogVisible = false; saveTemplateName = ''">取 消</button>
                 <button class="sureBtn" type="primary" @click="saveFileTemplate()">确 定</button>
             </span>
         </el-dialog>
@@ -81,10 +82,7 @@ export default {
             paramsData: {},
             processID: '',
             saveTemplateName: '',
-            // mustSingleSelect: '',
-            // optionSingleSelect: false,
-            // mustMultipleSelectTimes: null,
-            // optionMultipleSelectTimes: null
+            selectResult: ''
         }
     },
 
@@ -95,18 +93,13 @@ export default {
     mounted() {
         this.paramsData = JSON.parse(sessionStorage.getItem('sessionData'))
         this.saveTemplateName = this.paramsData.name
-        if (!this.saveTemplateName) {
-            const date = new Date()
-            const years = date.getFullYear()
-            const month = (date.getMonth() + 1) <10 ? '0'+(date.getMonth() + 1) : (date.getMonth() + 1)
-	        const dates = (date.getDate()) <10 ? '0'+date.getDate() : date.getDate()
-	        const hours = (date.getHours()) <10 ? '0'+date.getHours() : date.getHours()
-	        const minutes = (date.getMinutes()) <10 ? '0'+date.getMinutes() : date.getMinutes()
-	        const seconds = (date.getSeconds()) <10 ? '0'+date.getSeconds() : date.getSeconds()
-            this.saveTemplateName = years + '-' + month + '-' + dates + ' ' + hours + ':' + minutes + ':' + seconds
-        }
-        console.log(this.excleData, '第二步的数据')
-        console.log(this.optionkk, '我是生成 的')
+        this.value1 = this.excleData.excel.head
+        // console.log(this.excleData, '第二步的数据')
+        //
+	    console.log([this.excleData.must.select],'呵呵哒')
+        //
+        // console.log(this.optionkk, '我是生成 的')
+
     },
     computed:{
         // excle上传过来的数据
@@ -122,12 +115,18 @@ export default {
             return this.excleData.option
         },
         // 这里是表头的下拉框的option的
+	    mustCopy() {
+        	return Object.keys({...this.excleData.must.select,...this.excleData.must.checkbox})
+        },
+        optionCopy() {
+	        return Object.keys({...this.excleData.option.select,...this.excleData.option.checkbox})
+        },
         optionkk() {
             const musts = this.excleData.must.select
             const mustc = this.excleData.must.checkbox
-            const optionss = this.excleData.option.select
+            const options = this.excleData.option.select
             const optionc = this.excleData.option.checkbox
-            return {...musts,...mustc,...optionss,...optionc}
+            return {...musts,...mustc,...options,...optionc}
         },
         // 初始化一个占位数组
         resultArray() {
@@ -143,16 +142,7 @@ export default {
             for(let k=0; k<this.resultArray.length; k++){
                 this.resultArray[key] = val
             }
-            console.log(this.value1, '选择后的value')
-	        console.log(val, '选中的key')
-            console.log(val, '选中的val')
-
-            let inputs = $('#selectTable thead tr th input')
-	        inputs.change(function () {
-		        $(this).value('')
-		        console.log($(this),'对象元素')
-	        })
-            console.log(inputs,'你很优秀')
+            this.selectResult = val
             if(this.must.select[val]){
                 console.log('必选项中的单选')
 	            if(this.countOccurences(this.value1,val)>1){
@@ -184,6 +174,7 @@ export default {
             }
             if(this.paramsData.type === 'user'){
                 tableHeaderData.id = this.paramsData.id
+	            tableHeaderData.head = this.value1
             }
             console.log(tableHeaderData, '最后得到的参数')
             this.$http.post('/multiple-quote/product', this.$qs.stringify(tableHeaderData)).then(res => {
@@ -204,6 +195,9 @@ export default {
                 'head' : this.resultArray,
                 'name': this.saveTemplateName
             }
+	        if(this.paramsData.type === 'user'){
+		        tableHeaderData.head = this.value1
+	        }
             this.$http.post('/multiple-quote/custom-save', this.$qs.stringify(tableHeaderData)).then(res => {
                 console.log(res, '保存后的结果')
                 if(res.status === 200){
@@ -216,7 +210,26 @@ export default {
         },
 	    countOccurences(array, value) {
 		    return array.reduce((arr, val) => val === value ? arr + 1 : arr + 0, 0)
-        }
+        },
+        newDateName() {
+        	// console.log(this.saveTemplateName,'你是呵呵呵')
+	        if (!this.saveTemplateName) {
+		        const date = new Date()
+		        const years = date.getFullYear()
+		        const month = (date.getMonth() + 1) <10 ? '0'+(date.getMonth() + 1) : (date.getMonth() + 1)
+		        const dates = (date.getDate()) <10 ? '0'+date.getDate() : date.getDate()
+		        const hours = (date.getHours()) <10 ? '0'+date.getHours() : date.getHours()
+		        const minutes = (date.getMinutes()) <10 ? '0'+date.getMinutes() : date.getMinutes()
+		        const seconds = (date.getSeconds()) <10 ? '0'+date.getSeconds() : date.getSeconds()
+		        this.saveTemplateName = years + '-' + month + '-' + dates + ' ' + hours + ':' + minutes + ':' + seconds
+	        }
+        },
+	    closeDialog() {
+		    this.saveTemplateName = ''
+        },
+	    // blueSelect(e) {
+        //     e.target.classList.add("selectedItems");
+        // }
     }
 }
 
@@ -243,13 +256,14 @@ export default {
         font-weight: bold;
     }
     .selectItems{
-        padding: 8px 18px;
+        padding: 8px 16px;
         margin: 30px 15px 0 0;
         font-size: 14px;
         color: #333333;
         background:rgba(243,243,243,1);
         box-shadow:0px 2px 4px 0px rgba(255,255,255,0.5);
         border-radius:18px;
+        border: 1px solid transparent;
     }
     .information-match{
         margin-top: 70px;
@@ -334,6 +348,8 @@ export default {
     }
     .selectedItems{
         border: 1px solid #2F9AC0;
+        box-sizing: border-box;
+        color: #2F9AC0;
     }
 
     .sureBtn, .cancleBtn{

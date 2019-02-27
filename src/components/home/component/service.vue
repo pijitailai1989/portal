@@ -1,28 +1,41 @@
 <template>
   <div class="container">
     <div class="flexs ser j-center">
-        <p>{{characteristicService.serviceTitle}}</p>
+        <p>{{news.PL}}</p>
     </div>
-    <div class="flexs rows box">
-       <div @mouseover="mouseoverFn(index)" @mouseout="mouseoutFn(index)"  v-for="(item,index) in serviceArr" :key="index">
-        <div class="flexs columns contents a-center mar" :class="item.active?'active':''">
-            <div v-if="item.active" class="">
-                <i class="flexs a-center j-center circle1"><img :src="item.imgUrl1" alt=""></i>
-                <div class="circle" style="width: 133px;height: 133px;">
-                    <yd-progressbar progress="1"  stroke-color="" trail-width="1" trail-color="#91D2F3"></yd-progressbar>
-                </div>
-            </div>
-            <div v-else class="flexs a-end j-center">
-                <i class="flexs a-center j-center"><img :src="item.imgUrl" alt=""></i>
-            </div>
-            <div v-if="item.active"><p style="color:white;">{{characteristicService[item.name]}}</p></div>
-            <div v-else><p>{{characteristicService[item.name]}}</p></div>
-            <div style="padding:0 20px;"><span>{{characteristicService[item.msg]}}</span></div>
-        </div>
+    <div class="flexs columns box">
+       
+       <ul class="flexs">
+         <li v-for="(item,index) in serviceArray" :key="index" @click="activeFn(index)" class="flexs columns a-center" :class="{active:item.active}">
+             <i class="iconfont" :class="item.icon" :style="{color: item.color,fontSize: item.size+'px'}"/>
+             <p>{{news[item.name]}}</p>
+         </li>
+       </ul>
+       <div class="text flexs j-center">
+           <p>{{news[msg]}}</p>
+       </div>
+       <div>
+         <template>
+           <el-carousel @change="carouselFn" ref="carousel" :initial-index="clickIndex" :interval="5000" arrow="always">
+             <el-carousel-item v-for="(item,index) in serviceArray" :key="index">
+               <i><img :src="item.imgUrl" alt=""></i>
+             </el-carousel-item>
+           </el-carousel>
+         </template>
+       </div>
+       <div class="ji">
+          <div class="flexs a-center">
+              <h3>{{news.TR}}</h3>
+              <b></b>
+              <span>{{news.IM}}</span>
+          </div>
+          <div class="flexs">
+              <p>{{news.AL}}</p>
+          </div>
        </div>
     </div>
-    <div class="box1">
-       <div class="flexs rows">
+    <div class="box1 flexs j-center">
+       <div class="flexs rows ">
            <div v-for="(item,index) in serviceArr" :key="index" class="flexs columns a-center">
                <img :src="item.imgUrl" alt="">
                <p>{{characteristicService[item.name]}}</p>
@@ -43,18 +56,44 @@
     data () {
       return {
            serviceArr:[
-             {name:'customSolutions',msg:'solutionsSubContent',imgUrl1:require('../../../assets/img/copy1.png'),imgUrl:require('../../../assets/img/copy.png'),active:false},
-             {name:'logisticsSupermarket',msg:'logisticsSubContent',imgUrl1:require('../../../assets/img/chaoshi1.png'),imgUrl:require('../../../assets/img/chaoshi.png'),active:false},
-             {name:'quickComparison',msg:'comparisonSubContent',imgUrl1:require('../../../assets/img/duibifenxi1.png'),imgUrl:require('../../../assets/img/duibifenxi.png'),active:false},
-             {name:'overallTracking',msg:'trackingSubContent',imgUrl1:require('../../../assets/img/guanli1.png'),imgUrl:require('../../../assets/img/guanli.png'),active:false},
-             {name:'financialAnalysis',msg:'financialSubContent',imgUrl1:require('../../../assets/img/caiwu1.png'),imgUrl:require('../../../assets/img/caiwu.png'),active:false},
-           ]
+             {name:'serviceSearch',   msg:'serviceSearchContent',   imgUrl1:require('../../../assets/img/copy1.png'),       imgUrl:require('../../../assets/img/copy.png'),       active:false},
+             {name:'serviceBook',     msg:'serviceBookContent',     imgUrl1:require('../../../assets/img/chaoshi1.png'),    imgUrl:require('../../../assets/img/chaoshi.png'),    active:false},
+             {name:'serviceTracking', msg:'serviceTrackingContent', imgUrl1:require('../../../assets/img/duibifenxi1.png'), imgUrl:require('../../../assets/img/duibifenxi.png'), active:false},
+             {name:'serviceApi',      msg:'serviceApiContent',      imgUrl1:require('../../../assets/img/guanli1.png'),     imgUrl:require('../../../assets/img/guanli.png'),     active:false},
+           ],
+           serviceArray:[
+             {
+               name:'MG',icon:'icon-wuliukuaidi',size:'80',active:false,color:'#2F9AC0',
+               msg:'MG',
+               imgUrl:require('../../../assets/img/carousel.png')
+             },
+             {
+               name:'YD',icon:'icon-naozhong1',size:'80',active:false,color:'#F4B33D',
+               msg:'ACS',
+               imgUrl:require('../../../assets/img/carousel.png')
+             },
+             {
+               name:'QC',icon:'icon-shujuquxianzoushiqushifazhantubiaoshangsheng',size:'80',active:false,color:'#5AC6C9',
+               msg:'QC',
+               imgUrl:require('../../../assets/img/carousel.png')
+             },
+             {
+               name:'API',icon:'icon-ziyuanduijie-',size:'80',active:false,color:'#E78483',
+               msg:'API',
+               imgUrl:require('../../../assets/img/carousel.png')
+             }
+           ],
+           clickIndex:0,
+           msg:''
       };
     },
     computed:{
       characteristicService(){
         return this.$t('homeCharacteristicService')
-      }
+      },
+      news(){
+       return this.$t('news')
+      },
     },
 
     components: {},
@@ -76,6 +115,16 @@
       },
       mouseoutFn(index){
          this.clearFn()
+      },
+      carouselFn(i,y){
+        this.serviceArray[i].active=true;
+        if(y!=-1){
+           this.serviceArray[y].active=false;
+        }
+        this.msg=this.serviceArray[i].msg
+      },
+      activeFn(index){
+        this.$refs.carousel.setActiveItem(index);
       }
     },
 
@@ -85,6 +134,76 @@
 
 </script>
 <style lang='' scoped>
+   .el-carousel__item i {
+    color: #475669;
+    font-size: 18px;
+    width:100%;
+    margin: 0;
+  }
+  .el-carousel__item i>img {
+    width:100%;
+  }
+  
+  .box{
+    padding:90px 0 20px;
+  }
+  .box>.text{
+    font-size: 14px;
+    color:#999;
+    padding:40px 0;
+  }
+  .box>ul{
+    width:100%;
+
+  }
+  .box>ul>li{
+    width:25%;
+    padding:60px 0;
+    cursor:pointer;
+  }
+  .box>ul>li>p{
+    margin-top:20px;
+    font-size: 18px;
+    color:#333;
+  }
+  .box>ul>li.active{
+    background:rgba(255,255,255,1);
+    box-shadow:0px 4px 14px rgba(193,193,193,0.5);
+    border-radius:23px;
+  }
+  .box>.ji{
+    padding:60px 0;
+  }
+  .box>.ji span{
+    width:179px;
+    height:40px;
+    background:rgba(47,154,192,1) linear-gradient(138deg,rgba(47,183,192,1) 0%,rgba(47,154,192,1) 100%);
+    border-radius:20px;
+    text-align: center;
+    line-height:40px;
+    font-size:18px;
+    color:white;
+  }
+  .box>.ji>div{
+    padding:10px 0;
+  }
+  .box>.ji h3{
+    width:300px;
+    color:#333;
+    font-size:30px;
+  }
+  .box>.ji b{
+    margin:0 5px;
+    flex:1;
+    height:1px;
+    border:1px dashed rgba(220,220,220,1);
+  }
+  .box>.ji p{
+    font-size:16px;
+    color:rgba(170,170,170,1);
+  }
+
+
    .box1{
      display: none;
 
@@ -107,65 +226,17 @@
      color:#B9B9B9;
    }
    .ser{
-     margin-top:92px;
+     margin-top:60px;
    }
    .ser p{
      font-size:34px;
      font-weight:600;
      color:#333;
    }
-   .box{
-       width:100%;
-   }
-   .box>div{
-       width: 20%;
-       
-     }
-   .contents{
-     height:360px;
-     margin:60px 0;
-   }
-   .contents.active{
-     background:rgba(74,167,213,1) linear-gradient(180deg,rgba(74,199,213,1) 0%,rgba(48,149,200,1) 100%);
-     box-shadow:0px 5px 16px 0px rgba(195,230,247,1);
-     -webkit-animation:pulse .6s linear;
-     animation:pulse .6s linear;
-     /* -webkit-transform-style:preserve-3d; */
-   }
-   .contents>div:nth-child(1){
-     width: 100%;
-     height:226px;
-     padding:46px 0;
-     position: relative;
-   }
-   .contents>div>i{
-      width: 75px;
-      height: 61px;
-   }
-   .contents>div>i>img{
-      width: 75px;
-      height: 61px;
-   }
-   .contents>div>p{
-       height:41px;
-       font-size:20px;
-       color:#333;
-   }
-   .contents>div>span{
-       font-size:13px;
-       color:white;
-   }
    
    
    @media screen and (max-width: 992px) {
-     .box>div{
-       width: 33.3%;
-       
-     }
-     .contents{
-     height:260px;
-     margin:20px 0;
-   }
+     
      
    }
    @media screen and (max-width: 768px) {
@@ -180,6 +251,7 @@
        display: none;
      }
      .box1{
+       width:100%;
        display: inline-block;
      }
      .ser p{

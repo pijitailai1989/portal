@@ -80,7 +80,7 @@
    
    .box{
        width:100%;
-       padding:60px 0;
+       padding:30px 0 10px;
    }
    .contents{
      /* width: 15%; */

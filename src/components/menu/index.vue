@@ -4,19 +4,19 @@
         <HeaderCmp/>   
     </header>
     <section class="container flexs" style="padding:0;">
-        <aside>
+        <!-- <aside>
             <MenuList/>   
-        </aside>
+        </aside> -->
         <main>
-            <Breadcrumb/>
+            <!-- <Breadcrumb/> -->
             <router-view></router-view>
         </main>
     </section>
     <footer>
-        <Footers></Footers>
-        <div class="copy flexs a-center j-center">
-          <span class="flexs a-center j-center">{{$t('homeMaterialBenefits').copyRight}}： 2018 搜派 Spider All Rights Reserved ICP备10005645</span>
-        </div>
+        <!-- <Footers></Footers> -->
+        <!-- <div class="copy flexs a-center j-center">
+          <span class="flexs a-center j-center">{{$t('homeMaterialBenefits').copyRight}}：2019 搜派 Spider All Rights Reserved </span>
+        </div> -->
     </footer>
   </div>
 </template>

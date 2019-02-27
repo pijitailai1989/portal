@@ -13,6 +13,9 @@
 </template>
 
 <script>
+import L from 'leaflet';
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import { LMap, LTileLayer, LMarker, LTooltip, LPopup } from 'vue2-leaflet'
 export default {
   name: 'Example',
@@ -46,7 +49,7 @@ export default {
     }
   },
   methods: {
-    
+
   },
   mounted(){
     //  console.log(this.latitude,this.longitude,'jingde')
@@ -54,6 +57,6 @@ export default {
   }
 }
 </script>
-<style scoped>
-  /* @import "leaflet/dist/leaflet.css"; */
+<style>
+  /*@import "leaflet/dist/leaflet.css";*/
 </style>
