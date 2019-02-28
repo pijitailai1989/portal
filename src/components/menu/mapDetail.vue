@@ -54,7 +54,7 @@
                   <div v-if="lastmileList.length<=0" style="">
                       <ul class="cName">
                           <li v-for="(item,index) in nameList" :key="index" style="padding:10px 30px;border:1px solid #C3CCDD;margin:5px;" @click="listNameMap(item.content)">
-                               <p>{{item.content.country}}</p>
+                               <p>{{item.country_name}}</p>
                                <p style="padding:5px 0;">{{item.lastmile_count}}&nbsp;{{news.GFWS}}</p>
                           </li>
                       </ul>
@@ -78,7 +78,7 @@
     </footer> -->
     <MessageBoxs v-if="messAlert" @posttoparent="childListFn1">
         <span slot="header">{{news.JGXQ}}</span>
-        <span slot="excel"  class="excel">{{news.DCEXCEL}}</span>
+        <a slot="excel" :href="baseURL+'/last-mile/map/lastmile_rate-card-export/'+exportCode" style="color:white;font-size:20x;" class="excel">{{news.DCEXCEL}}</a>
         <div style="padding:10px 20px 20px;">
         <div class="price">
             
@@ -187,12 +187,13 @@
             </el-row>
         </div>
         <div style="padding:10px 20px 20px;width:1000px;">
-            <line-chart
+            <!-- <line-chart
             
             width="100%"
             :xData="lastmileRate.coordinates"
             :seriesData="echartData"
-            ></line-chart>
+            ></line-chart> -->
+            <x-chart :id="id" :xData="lastmileRate.coordinates" :seriesData="echartData"></x-chart>
         </div>
     </MessageBoxs>
     <MessageBoxs v-show="serviceAlert" @posttoparent="childListFn2">
@@ -307,11 +308,18 @@
   import MessageBoxs from '@/components/common/messageBoxs'
   import {mapState,mapGetters,mapActions,mapMutations} from 'vuex'
   import LineChart from "@/components/common/chart/lineeChart"
+  // 导入chart组件
+  import XChart from '@/components/common/chart/lineChart'
+// 导入chart组件模拟数据
+//   import options from './component/ser'
   export default {
     name:'detail',
     props:[''],
     data () {
+        // let option = options.bar
       return {
+          id: 'test',
+        //   option: option,
            steps:2,
            mapCity:[],
            listArr:[],
@@ -338,6 +346,7 @@
            submitShow:false,
            nameList:[],
            nameMap:{},
+           exportCode:null
       };
     },
     components: {
@@ -347,7 +356,8 @@
         GoogleMap,
         MessageBoxs,
         GoogleMaps,
-        LineChart
+        LineChart,
+        XChart
     },
 
     computed: {
@@ -379,12 +389,13 @@
     methods: {
         ...mapActions('menu',[
             'ajaxCountrylist','ajaxLastmileCode','ajaxRateCard','ajaxLastmileCountry','ajaxLastmileRate',
-            'ajaxNextLocationList','ajaxLastmileSearch','ajaxLastmileMapcountry','ajaxLastmileList'
+            'ajaxNextLocationList','ajaxLastmileSearch','ajaxLastmileMapcountry','ajaxLastmileList','ajaxExport'
         ]),
         ...mapMutations('menu',[
           'setback','getLastmileList','setPriceList','getRateCard','gitNextLocationList',
           'gitLastmileSearch','setLastmileList','setsearchArr','gitLastmileSearch'
         ]),
+        
         backGO(){
            this.setback(false)
         },
@@ -427,7 +438,7 @@
         childListName(val){
             const _this =this;
             this.nameList=val
-            console.log(val,'val111111111111')
+            // console.log(val,'val111111111111')
         },
         listNameMap(data){
             this.nameMap=data;
@@ -438,7 +449,8 @@
             // this.getRateCard([])
             // this.setPriceList([])
             this.ajaxRateCard(val)
-            
+            this.exportCode=val;
+            // console.log(val,this.exportCode,'this.exportCod')
         },
         childListFn3(val){
             // console.log(val,'(index)')
@@ -483,6 +495,7 @@
             // console.log(arr,'arr')
             let res = await this.ajaxLastmileRate( this.$qs.stringify(data) )
             // this.chartShow=true;
+            console.log(res,'45')
             
         },
 
@@ -636,15 +649,15 @@
                }
           },
           lastmileRate(newval,oldval){
+            //   console.log(11111111111111111)
              this.echartData=[]
              this.lastmileRate.data.forEach(element => {
                  let data={
                      
                  }
-                 data.name=element.service_name+'('+element.claimed_min_lead_time+'-'+element.claimed_max_lead_time+'days )'
+                 data.name=element.lastmile_name+' - '+element.service_name
                  data.data=element.rate
                  data.type='line'
-                 data
                  this.echartData.push(data)
              });
              

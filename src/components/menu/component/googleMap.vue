@@ -411,7 +411,7 @@
       childProvince(newval,oldval){
           const _this=this;
           if(newval){
-              console.log(newval,oldval,'newval,oldval')
+              // console.log(newval,oldval,'newval,oldval')
 
               _this.markers.forEach(el=>{
                 if(el.content['country']==newval){
@@ -444,12 +444,14 @@
         handler:function(newval,oldval){
              const _this=this;
              this.country_list.forEach( (el,index) => {
+               
                let data={}
                 //  data.lastmile_count=''
                  if(_this.overview){
                      for(let key in _this.overview){
                        if(el.country==key){
                           data.lastmile_count=_this.overview[key].lastmile_count.toString()
+                          data.country_name=_this.overview[key].country_name
                        }
                      }
                   }
@@ -483,11 +485,10 @@
                    location_code:el.location_code,
                    zoom:el.zoom
                  }
-                   if(_this.markers.length<_this.country_list.length){
+                //  console.log(_this.overview,'_this.overview')
+                   if(_this.markers.length<_this.country_list.length&&data.lastmile_count){
                      _this.markers.push(data)
                    }
-                    
-                 
                  if(_this.$route.query){
                     if(_this.$route.query.country==el.country){
                         _this.center={

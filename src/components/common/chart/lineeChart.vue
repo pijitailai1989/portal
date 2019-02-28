@@ -46,7 +46,7 @@ export default {
   },
   watch: {
       lastmileRate(newval,oldval){
-    //      console.log(this.lastmileRate,'this.rateCard')
+        //  console.log(this.lastmileRate,'this.rateCard')
          
     //      this.lastmileRate.data.forEach(element => {
     //          let data={}
@@ -70,20 +70,20 @@ export default {
          }
       },
       seriesData(newval,oldval){
-          console.log(newval,'newval',this.shows)
+          console.log(newval,'newval',this.xData)
           if(newval.length>0){
              this.setOptions(newval)
           }
       }
   },
   mounted(){
-        
   },
   computed: {
         ...mapState('menu',[
             'country_list','overview','lastmileList','backGo','rateCard','priceList','lastmileCountry',
             'nextLocationList','searchArr','mapCountry','lastmileRate'
         ]),
+        
     },
   methods: {
       initCharts() {

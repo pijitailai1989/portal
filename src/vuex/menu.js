@@ -298,6 +298,13 @@ export default {
     }
   },
   actions: {
+    //获取excel.
+    async ajaxExport({commit},data) {
+      let res = await axios.get('/last-mile/map/lastmile_rate-card-export/'+data)
+      console.log(res,5)
+      return res
+      
+    },
     //提交订单.
     async ajaxPlaceOrder({commit},data) {
       let res = await axios.post('/multiple-quote/place-order',data)

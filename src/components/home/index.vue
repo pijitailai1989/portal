@@ -63,7 +63,7 @@
         <span class="flexs a-center j-center">{{materialBenefits.copyRight}}：2019 {{nav.logoName}} All Rights Reserved</span>
       </div>
     </footer>
-    <MessageBoxs v-show="serviceAlert" @posttoparent="childListFn2">
+    <MessageBoxs v-if="serviceAlert" @posttoparent="childListFn2">
         <span slot="header">{{news.WLFWXQ}}</span>
         <div style="padding:10px 20px 20px;">
            <div class="loglogo flexs a-center" style="padding:10px 0 20px;">
@@ -102,7 +102,7 @@
            <div>
                <p style="padding:10px 0;border-bottom:1px dashed #ECECEC;font-weight:600;color:#333;">{{news.FG}}</p>
                <div style="width:100%;height:200px;padding:10px 0;">
-                   <GoogleMaps></GoogleMaps>
+                   <GoogleMaps @childList="childListFn1" :childProvince="provinceText" :childNameMap="nameMap"></GoogleMaps>
                </div>
            </div>
            <div class="price">
@@ -185,7 +185,12 @@ export default {
       anim:false,
       serviceAlert:false,
       lastmile_logo:'',
-      lastmile_summary:''
+      lastmile_summary:'',
+      nameMap:{},
+      provinceText:'',
+      makers:[],
+      lastmile_code:'',
+      country_name:''
     }
   },
   components: {
@@ -238,13 +243,21 @@ export default {
         ]),
        childListFn2(val){
             this.serviceAlert=val
+            
+        },
+        childListFn1(val){
+             
+             this.makers=val
         },
         swiperFn(val){
           this.serviceAlert=true;
           this.lastmile_logo=val.lastmile_logo
           this.lastmile_summary=val.lastmile_summary
           this.ajaxRateCard(val.lastmile_code)
-               console.log(val,'val')
+          this.lastmile_code=val.lastmile_code
+          this.country_name=val.country_name
+        //   this.ajaxLastmileCode( val.lastmile_code )
+            //    console.log(val,'val')
         },
         handleScroll(){
             // let clientWidth=this.$refs.scrollCont.clientWidth
@@ -272,6 +285,25 @@ export default {
             
             
         }
+  },
+  watch: {
+        makers:{
+            handler:function(newval,oldval){
+                const _this=this;
+              if(newval.length>0){
+                //  console.log(newval,'new')
+                 
+                 newval.forEach(element => {
+                     if(element.content.country==this.country_name){
+                         _this.nameMap=element.content
+                         _this.ajaxLastmileCode( _this.lastmile_code )
+                     }
+                 });
+              }
+            },
+            deep:true 
+        }
+        
   },
   mounted() {
     // this.getSellerRate()

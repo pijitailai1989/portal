@@ -50,7 +50,9 @@ export default {
         ZDJ:'Starting price',
         JJDL:'Delivery From',
         JGXQ:'Rate Card',
-        DCEXCEL:'Export excel'
+        DCEXCEL:'Export excel',
+        JGL:'Price',
+        ZLL:'Weight'
     },
     nav:{
         logoName: 'Spider Parcel',

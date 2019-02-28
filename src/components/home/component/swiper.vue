@@ -20,7 +20,7 @@
     </div>
     <div class="swiper-img flexs" v-show="textArr.length>=1">
       <div class="flexs a-center j-center fadeInUp" v-if="imgArr.length>=1">
-          <i v-for="(item,index) in imgArr"  style="cursor: pointer;"  :key="index"><img :src="baseURL+item.lastmile_logo" alt=""  @click="backPath(item.lastmile_code,item.lastmile_logo,item.lastmile_summary)"></i>
+          <i v-for="(item,index) in imgArr"  style="cursor: pointer;"  :key="index"><img :src="baseURL+item.lastmile_logo" alt=""  @click="backPath(item.lastmile_code,item.lastmile_logo,item.lastmile_summary,item.country_name)"></i>
       </div>
     </div>
     
@@ -67,7 +67,11 @@ export default {
        
     //  },
      scrollArr(newval,oldval){
-        
+        newval.forEach(element => {
+          element.lastmile.forEach(item=>{
+            item.country_name=element.country_name
+          })
+        });
         this.textArr=newval
         // console.log(this.textArr,'scrollArr')
         this.moveTo()
@@ -114,6 +118,7 @@ export default {
                  _this.textArr.push(obj[0])
                  
                  this.moveTo()
+
                },5000)
              }
              
@@ -126,11 +131,12 @@ export default {
     backTo(url,country_name,country){
         this.$router.push({path: url, query: {country: country_name,code:country}})
       },
-      backPath(lastmile_code,lastmile_logo,lastmile_summary){
+      backPath(lastmile_code,lastmile_logo,lastmile_summary,country_name){
           let data={}
           data.lastmile_code=lastmile_code
           data.lastmile_logo=lastmile_logo
           data.lastmile_summary=lastmile_summary
+          data.country_name=country_name
           this.$emit('childPost',data)
           // console.log(data)
       }

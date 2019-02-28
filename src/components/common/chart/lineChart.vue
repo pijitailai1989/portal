@@ -1,109 +1,113 @@
 <template>
-  <div :id="id" :style="{height:height,width:width}"></div>
+  <div class="">
+    <div v-show="shows" :id="id" style="height:400px;width:100%"></div>
+    <div v-show="!shows" style="height:400px;text-align:center;line-height:400px;">暂无相关数据</div>
+  </div>
 </template>
-
 <script>
+import HighCharts from 'highcharts'
+import {mapState,mapGetters,mapActions,mapMutations} from 'vuex'
 export default {
+  // 验证类型
   props: {
     id: {
       type: String
     },
-    width: {
-      type: String,
-      default: '200px'
-    },
-    height: {
-      type: String,
-      default: '200px'
-    },
-    isLegendShow: {
-        type: Boolean,
-        default: true
-    },
-    legendArray: {
+    // option: {
+    //   type: Object
+    // },
+    seriesData: {
         type: Array,
-        default: () => {
-            return ["物流费用", "订单金额"]
+        default: function() {
+        return []
         }
     },
-    xAxisName: {
-        type: String
+    xData: {
+        type: Array,
+        default: function() {
+        return []
+        }
     },
-    yAxisName: {
-        type: String
-    },
-    seriesData: {
-        type: Array
-    }
-    
   },
   data () {
     return {
-      msg: ''
+      shows:true,
+      xAxisName:'',
+      yAxisName:''
     }
   },
-  mounted(){
-      console.log(this.seriesData,'this.seriesData')
-    this.drawLine();
+  computed: {
+        ...mapState('menu',[
+            'country_list','overview','lastmileList','backGo','rateCard','priceList','lastmileCountry',
+            'nextLocationList','searchArr','mapCountry','lastmileRate'
+        ]),
+        news(){
+       return this.$t('news')
+      },
+    },
+  mounted() {
+    //   console.log(this.seriesData,'this.seriesData')
+    
   },
-  methods: {
-    drawLine(){
-        // 基于准备好的dom，初始化echarts实例
-        let myChart = this.$echarts.init(document.getElementById(this.id))
-        // 绘制图表
-        myChart.setOption({
-            legend: {
-                top: '20',
-                show: this.isLegendShow,
-                data: this.legendArray
-            },
-            grid: {
-                left: '3%',
-                right: '4%',
-                bottom: '3%',
-                width: '88%',
-                containLabel: true
-            },
-            tooltip: {
-                trigger: 'axis',
-                axisPointer: {
-                type: 'cross'
-            },
-            padding: [5, 10]
-            },
-            xAxis: {
-                type: 'category',
-                name: this.xAxisName,
-                boundaryGap: false,
-                axisLine:{
-                    lineStyle:{
-                        color:'#999999'
+  watch: {
+      lastmileRate(newval,oldval){
+            console.log(newval,'newval')
+         this.xAxisName=this.lastmileRate.unit
+         this.yAxisName=this.lastmileRate.currency
+         if(this.seriesData.length>0){
+             this.shows=true
+             this.initCharts()
+         }else{
+             this.shows=false
+         }
+      },
+      seriesData(newval,oldval){
+        //   console.log(newval,'newval',this.xData)
+          if(newval.length>0){
+             this.initCharts()
+          }
+      }
+  },
+  methods:{
+      initCharts(){
+          HighCharts.chart(this.id,
+              {
+                  chart: {
+	        		type: 'line',
+	        		zoomType: 'x',
+	        		panning: true,
+	        		panKey: 'shift'
+	        	},
+	        	title: {
+	        		text: ''
+                },
+                tooltip:{
+                    shared: true,
+                    useHTML: true,
+                    headerFormat: '<small>{point.key} '+this.xAxisName+'</small><table>',
+                    pointFormat: '<tr><td style="color: {series.color}">{series.name}:</td>' +
+                        '<td style="text-align: right"><b>'+this.yAxisName+ ' {point.y}</b></td></tr>',
+                    footerFormat: '</table>',
+                    valueDecimals: 2
+                },
+	        	subtitle: {
+	        		text: ''
+	        	},
+	        	xAxis: {
+                    categories: this.xData,
+                    title: {
+                        text:this.news.ZLL+'( '+this.xAxisName+' )'
                     }
                 },
-                splitLine: {
-                    show: false
-                },
-                data: ["10/1","10/2","10/3","10/4","10/5","10/6","10/7"]
-            },
-            yAxis: {
-                type: 'value',
-                name: this.yAxisName,
-                axisLine:{
-                    lineStyle:{
-                        color:'#999999'
+                yAxis:{
+                    title: {
+                        text:this.news.JGL+'( '+this.yAxisName+' )'
                     }
                 },
-                splitLine: {
-                    show: false
-                }
-            },
-            series: this.seriesData
-        });
-    }
+	        	series: this.seriesData
+              }
+            )
+      }
   }
 }
-
 </script>
-
-<style scoped>
-</style>

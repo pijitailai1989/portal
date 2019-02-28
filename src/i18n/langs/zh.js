@@ -50,7 +50,10 @@ export default {
         ZDJ:'最低价',
         JJDL:'寄件地',
         JGXQ:'价格详情',
-        DCEXCEL:'导出 excel'
+        DCEXCEL:'导出 excel',
+        JGL:'价格',
+        ZLL:'重量'
+
 
     },
     nav:{

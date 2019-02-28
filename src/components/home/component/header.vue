@@ -138,11 +138,13 @@ export default {
                sessionStorage.setItem('locale', 'zh')
                this.$i18n.locale = sessionStorage.getItem('locale')
                this.switchLangUrl(this.$i18n.locale)
+               location.reload();
                
              } else if (lang == 'en') {
                sessionStorage.setItem('locale', 'en')
                this.$i18n.locale = sessionStorage.getItem('locale')
                this.switchLangUrl(this.$i18n.locale)
+               location.reload();
             }
       }
       
@@ -203,7 +205,7 @@ export default {
       this.$http.get('/set-locale/'+lang).then(res => {
         if(res.status === 200){
           // this.$router.go(0)
-          console.log(res.data)
+          // console.log(res.data)
         }
       })
     }
