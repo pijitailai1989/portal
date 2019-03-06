@@ -137,14 +137,14 @@ export default {
            if(lang == 'zh'){
                sessionStorage.setItem('locale', 'zh')
                this.$i18n.locale = sessionStorage.getItem('locale')
+               
                this.switchLangUrl(this.$i18n.locale)
-               location.reload();
                
              } else if (lang == 'en') {
                sessionStorage.setItem('locale', 'en')
                this.$i18n.locale = sessionStorage.getItem('locale')
+              
                this.switchLangUrl(this.$i18n.locale)
-               location.reload();
             }
       }
       
@@ -206,6 +206,7 @@ export default {
         if(res.status === 200){
           // this.$router.go(0)
           // console.log(res.data)
+          location.reload();
         }
       })
     }
@@ -222,7 +223,7 @@ export default {
     width: 100%;
     min-height: 96px;
     background-color: #FCFCFC;
-    z-index: 10;
+    z-index: 999;
     -webkit-transition: background-color .2s ease;
     transition: background-color .2s ease;
     -webkit-box-shadow: 0 6px 24px rgba(0,0,0,.19);

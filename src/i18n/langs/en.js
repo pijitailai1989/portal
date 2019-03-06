@@ -52,7 +52,8 @@ export default {
         JGXQ:'Rate Card',
         DCEXCEL:'Export excel',
         JGL:'Price',
-        ZLL:'Weight'
+        ZLL:'Weight',
+        YSTS:'Spend time'
     },
     nav:{
         logoName: 'Spider Parcel',

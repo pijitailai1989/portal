@@ -279,14 +279,14 @@ import {mapState,mapGetters,mapActions,mapMutations} from 'vuex'
                        }
                      }
                   }
-/*
-               data.icon={
-                  url: require("../../../assets/img/map-marker.png"),
-                  scaledSize: { width: 26, height: 26, f: "px", b: "px" },
-                  origin: { x: 0, y: 0 },
-                  anchor: { x: 16, y: 16 }
-               }
-*/             
+
+              //  data.icon={
+              //     url: require("../../../assets/img/map-marker.png"),
+              //     scaledSize: { width: 26, height: 26, f: "px", b: "px" },
+              //     origin: { x: 0, y: 0 },
+              //     anchor: { x: 16, y: 16 }
+              //  }
+          
                data.content={
                    lat:el.lat,
                    cnt_lat:el.cnt_lat,

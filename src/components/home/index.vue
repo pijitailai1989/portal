@@ -6,7 +6,9 @@
         <swiper-cmp @childPost="swiperFn" />
     </section>
     <section class="section" ref='fg'>
-      <google-map/>
+      <leaflet-map v-if="maps.map===0"></leaflet-map>
+      <google-map v-else/>
+      
     </section>
     <section style="background:#FBFBFB" ref="pt">
       <Service/> 
@@ -65,7 +67,7 @@
     </footer>
     <MessageBoxs v-if="serviceAlert" @posttoparent="childListFn2">
         <span slot="header">{{news.WLFWXQ}}</span>
-        <div style="padding:10px 20px 20px;">
+        <div style="padding:10px 20px 20px;"  class="boxScroll scrollnone">
            <div class="loglogo flexs a-center" style="padding:10px 0 20px;">
                  <i style="width:150px;height:50px;"><img  style="width:100%;;height:100%;" :src="baseURL+lastmile_logo" alt=""></i>
                  <p style="width:650px;padding:0 20px;" class="flexs rows">{{lastmile_summary}}</p>
@@ -102,7 +104,9 @@
            <div>
                <p style="padding:10px 0;border-bottom:1px dashed #ECECEC;font-weight:600;color:#333;">{{news.FG}}</p>
                <div style="width:100%;height:200px;padding:10px 0;">
-                   <GoogleMaps @childList="childListFn1" :childProvince="provinceText" :childNameMap="nameMap"></GoogleMaps>
+                   
+                   <LeafletMaps v-if="maps.map===0" @childList="childListFn1" :childProvince="provinceText" :childNameMap="nameMap"></LeafletMaps>
+                   <GoogleMaps v-else @childList="childListFn1" :childProvince="provinceText" :childNameMap="nameMap"></GoogleMaps>
                </div>
            </div>
            <div class="price">
@@ -129,7 +133,7 @@
                            placement="right"
                            trigger="hover">
                            <p slot="reference" class="hiddenT">{{item.receive_region_name}}</p>
-                           <div class="details scrollbar" style="padding:10px;">
+                           <div class="details scrollbar" style="padding:5px 10px;">
                                <p v-for="(todo,i) in item.receive_region" :key="i">
                                    {{todo.name_multi_language.en}}
                                </p>
@@ -141,7 +145,7 @@
                            placement="right"
                            trigger="hover">
                            <p slot="reference" class="hiddenT">{{item.delivery_region_name}}</p>
-                           <div class="details scrollbar" style="padding:10px;">
+                           <div class="details scrollbar" style="padding:5px 10px;">
                                <p v-for="(todo,i) in item.delivery_region" :key="i">
                                    {{todo.name_multi_language.en}}
                                </p>
@@ -177,6 +181,8 @@ import BannerCmp from '@/components/home/component/banner'
 import SwiperCmp from '@/components/home/component/swiper'
 import GoogleMap from './component/googleMap'
 import GoogleMaps from './component/googleMaps'
+import LeafletMap from './component/leafletMap'
+import LeafletMaps from './component/leafletMaps'
 import MessageBoxs from '@/components/common/messageBoxs'
 export default {
   data () {
@@ -203,12 +209,14 @@ export default {
     // Footers, // CK : Hidden footer first
     GoogleMap,
     MessageBoxs,
-    GoogleMaps
+    GoogleMaps,
+    LeafletMap,
+    LeafletMaps,
   },
   computed:{
     ...mapState('menu',[
             'country_list','overview','lastmileList','backGo','rateCard','priceList','lastmileCountry',
-            'nextLocationList','searchArr','mapCountry'
+            'nextLocationList','searchArr','mapCountry','ips'
         ]),
     materialBenefits(){
         return this.$t('homeMaterialBenefits')
@@ -218,6 +226,9 @@ export default {
      },
      news(){
        return this.$t('news')
+     },
+     maps(){
+         return this.ips;
      }
   },
   methods:{
@@ -238,7 +249,7 @@ export default {
       //   }
       // }
       ...mapActions('menu',[
-            'ajaxCountrylist','ajaxLastmileCode','ajaxRateCard','ajaxLastmileCountry',
+            'ajaxCountrylist','ajaxLastmileCode','ajaxRateCard','ajaxLastmileCountry','ajaxMap',
             'ajaxNextLocationList','ajaxLastmileSearch','ajaxLastmileMapcountry','ajaxLastmileList'
         ]),
        childListFn2(val){
@@ -260,11 +271,11 @@ export default {
             //    console.log(val,'val')
         },
         handleScroll(){
-            // let clientWidth=this.$refs.scrollCont.clientWidth
-            // let scrollLeft=this.$refs.scrollCont.scrollLeft
-            // let scrollTop=this.$refs.scrollCont.scrollTop
+            let clientWidth=this.$refs.scrollCont.clientWidth
+            let scrollLeft=this.$refs.scrollCont.scrollLeft
+            let scrollTop=this.$refs.scrollCont.scrollTop
             // console.log(scrollLeft,scrollTop,'scrollHeight')
-            // this.$refs.scrollHeadr.scrollLeft=scrollLeft
+            this.$refs.scrollHeadr.scrollLeft=scrollLeft
         },
         headerFn(val){
             // console.log(val,'val',this.$refs.hz.offsetTop)
@@ -302,10 +313,18 @@ export default {
               }
             },
             deep:true 
+        },
+        ips(newval,oldval){
+            // console.log(newval,'new;;;ld')
         }
         
   },
+  created(){
+      
+  },
+
   mounted() {
+      this.ajaxMap()
     // this.getSellerRate()
     // window.addEventListener('scroll', this.handleScroll)
     // document.documentElement.scrollTop=0
@@ -424,25 +443,25 @@ export default {
    .priceList{
        /* width:100%; */
        overflow-x: auto;
-       width: 800px;
-       
+       width: 1000px;
+       font-weight: 600;
    }
    .priceList>ul:first-child{
-      width:120px;
+      width:160px;
    }
    .priceList>ul:first-child>li{
-      width:120px;
+      width:160px;
    }
    .priceList>ul{
       max-width:100%;
-      min-width: 120px;
+      min-width: 160px;
       width: 100%;
    }
    
    .priceList>ul>li{
        width: 100%;
        padding:0 10px;
-       height:70px;
+       height:60px;
        border-bottom:1px dashed #ECECEC;
        background: white;
    }
@@ -460,10 +479,14 @@ export default {
        line-height: 50px;
    }
    .priceList1{
-       max-width:800px;
-      height:100px;
+       max-width:1020px;
+      max-height:400px;
       overflow-x: auto;
       overflow-y: auto;
+   }
+   .boxScroll{
+       overflow-y: auto;
+       max-height:650px;
    }
    .priceList1>ul{
        width:100%;
@@ -471,7 +494,7 @@ export default {
    }
    .priceList1>ul>li{
        max-width:100%;
-       min-width: 120px;
+       min-width: 160px;
        width: 100%;
 
        min-height:50px;
@@ -479,7 +502,7 @@ export default {
        border-bottom:1px dashed #ECECEC;
    }
    .priceList1>ul>li:first-child{
-       width:120px;
+       width:160px;
    }
    @media screen and (max-width: 992px) {
      

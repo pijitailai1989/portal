@@ -176,7 +176,7 @@ export default {
         /* border:1px solid #2F9AC0; */
         border-radius: 5px;
         /* box-shadow:0px 0px 18px 0px rgba(47,154,192); */
-        background: rgba(47,154,192);
+        background: rgba(47,154,192,1) !important;
     }
     .swiper-items>div{
         /* border:1px solid none; */

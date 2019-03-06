@@ -67,7 +67,9 @@
         </aside>
         <main>
              
-             <GoogleMap @childPost="childFn" @childList="childListName" :childProvince="provinceText" :childNameMap="nameMap"></GoogleMap>
+            
+             <leaflet-map v-if="maps.map===0" @childPost="childFn" @childList="childListName" :childProvince="provinceText" :childNameMap="nameMap"></leaflet-map>
+              <GoogleMap v-else @childPost="childFn" @childList="childListName" :childProvince="provinceText" :childNameMap="nameMap"></GoogleMap>
         </main>
     </section>
     <!-- <footer> -->
@@ -146,7 +148,7 @@
                       <el-col :span="3" :offset="1" class="label-title">
                           <label class="Mandatory"> {{news.JJDL}}</label>
                       </el-col>
-                      <el-col :span="5" :offset="1">
+                      <el-col :span="4" :offset="1">
                           <el-select
                               v-model="send"
                               filterable
@@ -159,7 +161,7 @@
                       <el-col :span="2" :offset="1" class="label-title">
                           <label class="Mandatory"> {{news.SHD}}</label>
                       </el-col>
-                      <el-col :span="5" :offset="1">
+                      <el-col :span="4" :offset="1">
                           <el-select
                               v-model="receipt"
                               filterable
@@ -181,8 +183,8 @@
                              </el-slider>
                            </div>
                       </el-col>
-                      <el-col :span="2">
-                          <div style="padding-left:10px;">{{steps}}&nbsp;{{menu.day}}</div>
+                      <el-col :span="4">
+                          <div style="padding-left:10px;">{{news.YSTS}} : {{steps}}&nbsp;{{menu.day}}</div>
                       </el-col>
             </el-row>
         </div>
@@ -193,12 +195,12 @@
             :xData="lastmileRate.coordinates"
             :seriesData="echartData"
             ></line-chart> -->
-            <x-chart :id="id" :xData="lastmileRate.coordinates" :seriesData="echartData"></x-chart>
+            <x-chart :id="id" :xData="lastmileRate.coordinates" :seriesData="echartData" @chartFn="lineChartFn"></x-chart>
         </div>
     </MessageBoxs>
     <MessageBoxs v-show="serviceAlert" @posttoparent="childListFn2">
         <span slot="header">{{news.WLFWXQ}}</span>
-        <div style="padding:10px 20px 20px;">
+        <div style="padding:10px 20px 20px;" class="boxScroll scrollnone">
            <div class="loglogo flexs a-center" style="padding:10px 0 20px;">
                  <i style="width:150px;height:50px;"><img  style="width:100%;;height:100%;" :src="baseURL+serDetail.logo" alt=""></i>
                  <p style="width:600px;padding:0 20px;" class="flexs rows">{{serDetail.summary}}</p>
@@ -235,7 +237,9 @@
            <div>
                <p style="padding:10px 0;border-bottom:1px dashed #ECECEC;font-weight:600;color:#333;">{{news.FG}}</p>
                <div style="width:100%;height:200px;padding:10px 0;">
-                   <GoogleMap @childPost="childFn" @childList="childListName" :childProvince="provinceText" :childNameMap="nameMap"></GoogleMap>
+                   
+                   <leaflet-maps  v-if=" serviceAlert && maps.map===0" @childPost="childFn" @childList="childListName" :childProvince="provinceText" :childNameMap="nameMap"></leaflet-maps>
+                   <GoogleMap v-else @childPost="childFn" @childList="childListName" :childProvince="provinceText" :childNameMap="nameMap"></GoogleMap>
                </div>
            </div>
            <div class="price">
@@ -262,7 +266,7 @@
                            placement="right"
                            trigger="hover">
                            <p slot="reference" class="hiddenT">{{item.receive_region_name}}</p>
-                           <div class="details scrollbar" style="padding:10px;">
+                           <div class="details scrollbar" style="padding:5px 10px;">
                                <p v-for="(todo,i) in item.receive_region" :key="i">
                                    {{todo.name_multi_language.en}}
                                </p>
@@ -274,7 +278,7 @@
                            placement="right"
                            trigger="hover">
                            <p slot="reference" class="hiddenT">{{item.delivery_region_name}}</p>
-                           <div class="details scrollbar" style="padding:10px;">
+                           <div class="details scrollbar" style="padding:5px 10px;">
                                <p v-for="(todo,i) in item.delivery_region" :key="i">
                                    {{todo.name_multi_language.en}}
                                </p>
@@ -306,6 +310,8 @@
   import GoogleMap from './component/googleMap'
   import GoogleMaps from './component/googleMaps'
   import MessageBoxs from '@/components/common/messageBoxs'
+  import LeafletMap from './component/leafletMap'
+  import LeafletMaps from './component/leafletMaps'
   import {mapState,mapGetters,mapActions,mapMutations} from 'vuex'
   import LineChart from "@/components/common/chart/lineeChart"
   // 导入chart组件
@@ -357,13 +363,15 @@
         MessageBoxs,
         GoogleMaps,
         LineChart,
-        XChart
+        XChart,
+        LeafletMap,
+        LeafletMaps
     },
 
     computed: {
         ...mapState('menu',[
             'country_list','overview','lastmileList','backGo','rateCard','priceList','lastmileCountry',
-            'nextLocationList','searchArr','mapCountry','lastmileRate'
+            'nextLocationList','searchArr','mapCountry','lastmileRate','ips'
         ]),
         news(){
        return this.$t('news')
@@ -371,11 +379,15 @@
       menu(){
        return this.$t('menu')
       },
+      maps(){
+         return this.ips;
+      }
     },
 
     beforeMount() {},
 
     mounted() {
+        this.ajaxMap()
         // this.ajaxLastmileCountry()
         this.ajaxLastmileMapcountry()
         document.documentElement.scrollTop=0
@@ -388,14 +400,16 @@
     },
     methods: {
         ...mapActions('menu',[
-            'ajaxCountrylist','ajaxLastmileCode','ajaxRateCard','ajaxLastmileCountry','ajaxLastmileRate',
+            'ajaxCountrylist','ajaxLastmileCode','ajaxRateCard','ajaxLastmileCountry','ajaxLastmileRate','ajaxMap',
             'ajaxNextLocationList','ajaxLastmileSearch','ajaxLastmileMapcountry','ajaxLastmileList','ajaxExport'
         ]),
         ...mapMutations('menu',[
           'setback','getLastmileList','setPriceList','getRateCard','gitNextLocationList',
           'gitLastmileSearch','setLastmileList','setsearchArr','gitLastmileSearch'
         ]),
-        
+        lineChartFn(){
+            this.echartCon()
+        },
         backGO(){
            this.setback(false)
         },
@@ -414,7 +428,7 @@
         childFn(val){
             // this.gitLastmileSearch( [] )
             this.country=val
-            
+            this.submitShow=false;
             this.mapCity=[]
             this.selectedCity=''
             this.selectedProvince=''
@@ -442,7 +456,6 @@
         },
         listNameMap(data){
             this.nameMap=data;
-            
         },
         childListFn(val){
             this.messAlert=true
@@ -457,6 +470,7 @@
             this.serDetail=val
             this.serviceAlert=true
             this.ajaxRateCard(val.lastmile_code)
+            console.log('alert')
             this.ajaxLastmileCode( val.lastmile_code )
             this.nameMap=this.nameMap;
             // console.log(this.lastmileList,'lastmileList3',this.searchArr1,this.searchArr2)
@@ -495,7 +509,7 @@
             // console.log(arr,'arr')
             let res = await this.ajaxLastmileRate( this.$qs.stringify(data) )
             // this.chartShow=true;
-            console.log(res,'45')
+            // console.log(res,'45')
             
         },
 
@@ -581,7 +595,7 @@
 
         },
         provinceFn(val){
-            // console.log(val,'val')
+            // console.log(val,'val',this.nameList)
             this.provinceText=val
             this.selectedCity=''
             this.mapCountry.forEach(el => {
@@ -594,6 +608,14 @@
            data['country']=val;
            data['province']=this.selectedCity
            this.ajaxLastmileList( this.$qs.stringify(data) )
+           this.nameList.forEach(el=>{
+               if(val==el.content.country){
+                   
+                   let code=el.content.location_code
+                   console.log(1111,code)
+                   this.$router.push({path: '/mapDetail', query: {country: val,code:code}})
+               }
+           })
             // this.gitNextLocationList( [] )
             // this.ajaxNextLocationList(val)
         },
@@ -615,6 +637,19 @@
     },
 
     watch: {
+        ips(newval,oldval){
+            // console.log(newval,'new;;;ld')
+        },
+        selectedProvince(newval,oldval){
+           this.nameList.forEach(el=>{
+               if(newval==el.content.country){
+                   
+                   let code=el.content.location_code
+                   console.log(1111,code)
+                   this.$router.push({path: '/mapDetail', query: {country: newval,code:code}})
+               }
+           })
+        },
           lastmileList(newval,oldval){
               
              
@@ -633,8 +668,9 @@
             //   console.log(this.searchArr1,this.searchArr2,'this.searchArr1')
           },
           mapCountry(newval,oldval){
+
               if(this.$route.query.country){
-            // console.log(111111111111111)
+            // console.log(111111111111111,newval)
                    const _this = this
                  _this.selectedProvince=_this.$route.query.country
                  _this.mapCountry.forEach(el => {
@@ -657,6 +693,7 @@
                  }
                  data.name=element.lastmile_name+' - '+element.service_name
                  data.data=element.rate
+                 data.data1=element.rate
                  data.type='line'
                  this.echartData.push(data)
              });
@@ -758,24 +795,24 @@
        /* width:100%; */
        overflow-x: auto;
        width: 1000px;
-       
+       font-weight: 600;
    }
    .priceList>ul:first-child{
-      width:120px;
+      width:160px;
    }
    .priceList>ul:first-child>li{
-      width:120px;
+      width:160px;
    }
    .priceList>ul{
       max-width:100%;
-      min-width: 120px;
+      min-width: 160px;
       width: 100%;
    }
    
    .priceList>ul>li{
        width: 100%;
        padding:0 10px;
-       height:70px;
+       height:60px;
        border-bottom:1px dashed #ECECEC;
        background: white;
    }
@@ -789,14 +826,18 @@
    }
    .priceList1>ul>li>span{
        height:100%;
-       width:100%;
+       width:160px;
        line-height: 50px;
    }
    .priceList1{
-       max-width:1000px;
-      height:250px;
+       max-width:1020px;
+      max-height:400px;
       overflow-x: auto;
       overflow-y: auto;
+   }
+   .boxScroll{
+       overflow-y: auto;
+       max-height:650px;
    }
    .priceList1>ul{
        width:100%;
@@ -804,7 +845,7 @@
    }
    .priceList1>ul>li{
        max-width:100%;
-       min-width: 120px;
+       min-width: 160px;
        width: 100%;
 
        min-height:50px;
@@ -812,7 +853,7 @@
        border-bottom:1px dashed #ECECEC;
    }
    .priceList1>ul>li:first-child{
-       width:120px;
+       width:160px;
    }
     .label-title{
         line-height: 40px;

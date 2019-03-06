@@ -1,5 +1,5 @@
 <template>
-  <div class=" googles" id="map">
+  <div class="googles" id="map">
        <gmap-map
          :options="{styles: styles, disableDefaultUI: true, draggableCursor: 'crosshair'}"
          :center="center"
@@ -401,6 +401,7 @@
             this.pathArr.push(poly)
           }
           this.setback(true)
+          // console.log(this.pathArr,'pathArr')
           this.$emit('childPost',this.country)
           
       }
@@ -519,7 +520,7 @@
       position: absolute;
       top:20px;
       right:0;
-      z-index:3000;
+      z-index:1000;
       
       height:50px;
       background:rgba(244,179,61,.6);

@@ -34,7 +34,8 @@ export default {
       nextLocationList:[],
       searchArr:[],
       mapCountry:[],
-      lastmileRate:{}
+      lastmileRate:{},
+      ips:{}
     }
   },
   getters: {
@@ -295,13 +296,24 @@ export default {
     },
     getReselectProduct(state,data){
       state.products=data.data
+    },
+    getIp(state,data){
+      state.ips=data.data
     }
   },
   actions: {
+    //获取ip.
+    async ajaxMap({commit},data) {
+      let res = await axios.get('/last-mile/map')
+      // console.log(res,'MAP')
+      commit("getIp",res)
+      return res
+      
+    },
     //获取excel.
     async ajaxExport({commit},data) {
       let res = await axios.get('/last-mile/map/lastmile_rate-card-export/'+data)
-      console.log(res,5)
+      // console.log(res,5)
       return res
       
     },

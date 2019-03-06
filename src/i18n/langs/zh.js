@@ -52,7 +52,8 @@ export default {
         JGXQ:'价格详情',
         DCEXCEL:'导出 excel',
         JGL:'价格',
-        ZLL:'重量'
+        ZLL:'重量',
+        YSTS:'运输天数'
 
 
     },

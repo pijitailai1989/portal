@@ -21,10 +21,19 @@ import axios from 'axios'
 import qs from 'qs'
 import VueLazyload from 'vue-lazyload'
 import VueAnalytics from 'vue-analytics'
-//import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
+import  L  from 'leaflet'
+import 'leaflet.icon.glyph';
 //import 'leaflet/dist/leaflet.css'
 //import icon from 'leaflet/dist/images/marker-icon.png';
 //import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+  iconUrl: require('leaflet/dist/images/marker-icon.png'),
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+});
 
 import * as VueGoogleMaps from "vue2-google-maps";
 Vue.use(VueGoogleMaps, {
