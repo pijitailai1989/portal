@@ -35,7 +35,9 @@ export default {
       searchArr:[],
       mapCountry:[],
       lastmileRate:{},
-      ips:{}
+      ips:{
+        map:1
+      }
     }
   },
   getters: {

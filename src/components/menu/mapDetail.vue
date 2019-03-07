@@ -67,8 +67,8 @@
         </aside>
         <main>
              
-            
-             <leaflet-map v-if="maps.map===0" @childPost="childFn" @childList="childListName" :childProvince="provinceText" :childNameMap="nameMap"></leaflet-map>
+              
+              <leaflet-map  v-if="maps.map===0" @childPost="childFn" @childList="childListName" :childProvince="provinceText" :childNameMap="nameMap"></leaflet-map>
               <GoogleMap v-else @childPost="childFn" @childList="childListName" :childProvince="provinceText" :childNameMap="nameMap"></GoogleMap>
         </main>
     </section>
@@ -198,7 +198,7 @@
             <x-chart :id="id" :xData="lastmileRate.coordinates" :seriesData="echartData" @chartFn="lineChartFn"></x-chart>
         </div>
     </MessageBoxs>
-    <MessageBoxs v-show="serviceAlert" @posttoparent="childListFn2">
+    <MessageBoxs v-if="serviceAlert" @posttoparent="childListFn2">
         <span slot="header">{{news.WLFWXQ}}</span>
         <div style="padding:10px 20px 20px;" class="boxScroll scrollnone">
            <div class="loglogo flexs a-center" style="padding:10px 0 20px;">
@@ -238,8 +238,8 @@
                <p style="padding:10px 0;border-bottom:1px dashed #ECECEC;font-weight:600;color:#333;">{{news.FG}}</p>
                <div style="width:100%;height:200px;padding:10px 0;">
                    
-                   <leaflet-maps  v-if=" serviceAlert && maps.map===0" @childPost="childFn" @childList="childListName" :childProvince="provinceText" :childNameMap="nameMap"></leaflet-maps>
-                   <GoogleMap v-else @childPost="childFn" @childList="childListName" :childProvince="provinceText" :childNameMap="nameMap"></GoogleMap>
+                   <leaflet-maps  v-if="maps.map===0" :childProvince="provinceText" :childNameMap="nameMap"></leaflet-maps>
+                   <GoogleMaps v-else :childProvince="provinceText" :childNameMap="nameMap"></GoogleMaps>
                </div>
            </div>
            <div class="price">
@@ -352,7 +352,7 @@
            submitShow:false,
            nameList:[],
            nameMap:{},
-           exportCode:null
+           exportCode:null,
       };
     },
     components: {
@@ -387,7 +387,7 @@
     beforeMount() {},
 
     mounted() {
-        this.ajaxMap()
+        // this.ajaxMap()
         // this.ajaxLastmileCountry()
         this.ajaxLastmileMapcountry()
         document.documentElement.scrollTop=0
@@ -414,7 +414,7 @@
            this.setback(false)
         },
         selectClick(index,lastmile_code){
-            // console.log(index,lastmile_code,'index')
+            console.log(index,lastmile_code,'index')
             this.selectIndex=index
             this.ajaxLastmileCode( lastmile_code )
             this.selectIndex1=null
@@ -470,7 +470,7 @@
             this.serDetail=val
             this.serviceAlert=true
             this.ajaxRateCard(val.lastmile_code)
-            console.log('alert')
+            // console.log('alert')
             this.ajaxLastmileCode( val.lastmile_code )
             this.nameMap=this.nameMap;
             // console.log(this.lastmileList,'lastmileList3',this.searchArr1,this.searchArr2)
@@ -595,7 +595,6 @@
 
         },
         provinceFn(val){
-            // console.log(val,'val',this.nameList)
             this.provinceText=val
             this.selectedCity=''
             this.mapCountry.forEach(el => {
@@ -603,6 +602,7 @@
                     this.mapCity=el.province
                 }
             })
+            
             this.selectedCity=this.mapCity[0].code
             let data={}
            data['country']=val;
@@ -612,7 +612,7 @@
                if(val==el.content.country){
                    
                    let code=el.content.location_code
-                   console.log(1111,code)
+                //    console.log(1111,code)
                    this.$router.push({path: '/mapDetail', query: {country: val,code:code}})
                }
            })
@@ -645,7 +645,7 @@
                if(newval==el.content.country){
                    
                    let code=el.content.location_code
-                   console.log(1111,code)
+                //    console.log(1111,code)
                    this.$router.push({path: '/mapDetail', query: {country: newval,code:code}})
                }
            })

@@ -10,7 +10,7 @@
     <div class="swiper-container" v-show="textArr.length>=1">
       <div class="box flexs rown"  ref="maxBox">
         <div class="swiper-items" v-for="(item,index) in textArr" :key="index">
-          <div :class="[colorShow&&index==3?'active':'']" style="cursor: pointer;" class="flexs columns j-around" @click="backTo('/mapDetail',item.country_name,item.country)">
+          <div :class="[colorShow&&index==3?'active':'']" style="cursor: pointer;" class="flexs columns j-around" @click="backTo('/mapDetail',item.country_name,item.location_code,item)">
            <p style="padding:0;margin:0;">{{item.country}}</p>
            <p style="padding:0;margin:0;font-size:12pt;">{{item.lastmile_count}} {{news.FW}}</p>
           </div>
@@ -73,7 +73,7 @@ export default {
           })
         });
         this.textArr=newval
-        // console.log(this.textArr,'scrollArr')
+        // console.log(newval,'scrollArr')
         this.moveTo()
      }
   },
@@ -128,7 +128,8 @@ export default {
     setTime(){
           
     },
-    backTo(url,country_name,country){
+    backTo(url,country_name,country,item){
+        //  console.log(item,'item')
         this.$router.push({path: url, query: {country: country_name,code:country}})
       },
       backPath(lastmile_code,lastmile_logo,lastmile_summary,country_name){

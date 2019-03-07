@@ -373,8 +373,8 @@
       showCountry(data){
         // console.log(data,'data',this.markers)
         this.center={
-                   lat:data.lat,
-                   lng:data.lng
+                   lat:data.cnt_lat,
+                   lng:data.cnt_lng
                  }
         this.defaultZoom=data.zoom
         this.getLastmileList( [] )
@@ -460,8 +460,8 @@
 
                  if(index==0){
                    this.center={
-                     lat:el.lat,
-                     lng:el.lng
+                     lat:el.cnt_lat,
+                     lng:el.cnt_lng
                    }
                    
                  }
@@ -493,8 +493,8 @@
                  if(_this.$route.query){
                     if(_this.$route.query.country==el.country){
                         _this.center={
-                                   lat:el.lat,
-                                   lng:el.lng
+                                   lat:el.cnt_lat,
+                                   lng:el.cnt_lng
                                  }
                         _this.defaultZoom=el.zoom
                     }

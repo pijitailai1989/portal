@@ -3,7 +3,7 @@
     <div slot="visible" class="positionRight flexs a-center">
                  <span style="color:white;font-size:18px;padding:0 20px;" class="hiddenT">{{news.PSQY}}</span>
     </div>
-    <l-map style="width: 100%; height: 100%;" :zoom="defaultZoom" :center="centerData" :attributionControl="attributionControl" @update:center="centerUpdated">
+    <l-map style="width: 100%; height: 100%;" :zoom="defaultZoom" :center="centerData" @update:center="centerUpdated">
       <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
       <l-marker :key="index" v-for="(m, index) in markers" :lat-lng="m.lat_lng" @click="showCountry(m.content)"  :draggable="draggable"
             @mouseover="toggleInfoWindow(m.content)"
@@ -12,7 +12,6 @@
           :icon-url="m.icon.iconUrl"
           :icon-size="m.icon.iconSize"
           :icon-anchor="m.icon.iconAnchor"
-
           >
         </l-icon>
         <l-tooltip>
@@ -62,13 +61,13 @@ export default {
     LPopup,
     LPolygon,
     LIcon,
-    LTooltip
+    LTooltip,
   },
   data () {
     return {
-      centerData: L.latLng(8, 110),
+      centerData:[8, 110],
       url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-      attribution: '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      attribution: '',
       marker: L.latLng(8, 110),
       text: 'this is a marker',
 
@@ -171,7 +170,14 @@ export default {
       showCountry(data){
         // console.log(data,'data')
         const _this =this;
-        this.defaultZoom = data.zoom > 7 ? 7 : data.zoom;
+        
+        
+        // this.$set(this.centerData,'lat',data.lat)
+        // this.$set(this.centerData,'lng',data.lng)
+         _this.centerData=[
+                   data.cnt_lat,
+                   data.cnt_lng
+        ]
         this.getLastmileList( [] )
         this.getRegionLocation( [] )
         let obj={}
@@ -182,16 +188,11 @@ export default {
         this.location_code=data.location_code
         this.setback(false)
         this.$emit('childPost',this.country)
-        // console.log(this.country,'this.country')
+        setTimeout(() => {
+           this.defaultZoom = data.zoom;
+        }, 500);
         
-        // console.log( _this.defaultZoom,' _this.defaultZoom')
-        this.$set(this.centerData,'lat',data.lat)
-        this.$set(this.centerData,'lng',data.lng)
-        //  _this.centerData=[
-        //            data.lat,
-        //            data.lng
-        // ]
-        // console.log(this.centerData,'this.center showCountry')
+        // console.log(this.centerData,'this.center showCountry',data.lat,data.lng,this.defaultZoom)
       },
       showLastmileByRegion(id,name,level,poly){
           // console.log(id,name,level,poly,'location_code,has_next_level')
@@ -212,7 +213,16 @@ export default {
     },
 
     watch: {
-      
+      $route: {
+        handler: function(val, oldVal){
+          // console.log(val,oldVal,'$route1');
+           if(val.fullPath!=oldVal.fullPath){
+              // console.log(val,oldVal,'$route2');
+           }
+        },
+        // 深度观察监听
+        deep: true
+      },
       childProvince(newval,oldval){
           const _this=this;
           if(newval){
@@ -232,7 +242,7 @@ export default {
         const _this=this;
         // console.log(newval,oldval,'11')
         if(newval){
-           _this.showCountry(newval);
+          //  _this.showCountry(newval);
         }
       },
       regionLocation(newval,oldval){
@@ -250,7 +260,18 @@ export default {
             this.country_list.forEach( (el,index) => {
               // console.log(this.country_list,'this.country_list')
                let data={}
-                //  data.lastmile_count=''
+               if(_this.$route.query){
+                    if(_this.$route.query.country==el.country){
+                        _this.centerData=[el.cnt_lat,el.cnt_lng]
+                        // this.$set(_this.centerData,'lat',el.lat)
+                        // this.$set(_this.centerData,'lng',el.lng)
+                        
+                        setTimeout(() => {
+                           _this.defaultZoom = el.zoom;
+                        }, 500);
+                        
+                    }
+                 }
                  if(_this.overview){
                      for(let key in _this.overview){
                        if(el.country==key){
@@ -259,13 +280,6 @@ export default {
                        }
                      }
                   }
-                // if(index==0){
-                //    this.center=[
-                //      el.lat,
-                //      el.lng
-                //    ]
-                   
-                //  }
 
                data.icon={
                   iconUrl: require("../../../assets/img/map-marker.png"),
@@ -291,20 +305,7 @@ export default {
                 if(_this.markers.length<_this.country_list.length&&data.lastmile_count){
                      _this.markers.push(data)
                    }
-                 if(_this.$route.query){
-                    if(_this.$route.query.country==el.country){
-                        this.$set(_this.centerData,'lat',el.lat)
-                        this.$set(_this.centerData,'lng',el.lng)
-                  //       _this.centerData=[
-                  //    el.lat,
-                  //    el.lng
-                  //  ]
-                    //  console.log(el.zoom,this.centerData,'this.center11111111111')
-                        
-                        _this.defaultZoom = el.zoom > 7 ? 7 : el.zoom;
-                        
-                    }
-                 }
+                 
                 
             })
 
@@ -318,6 +319,7 @@ export default {
     height:100%;
 	width:100%;
 	padding:0px;
+  position: relative;
   }
    .ser{
      margin-top:90px;

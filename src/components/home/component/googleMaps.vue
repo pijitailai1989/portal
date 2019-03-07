@@ -327,8 +327,8 @@
         const _this=this;
           let obj={}
         obj['country']=_this.$route.query.country
-        this.ajaxLastmileList( this.$qs.stringify(obj) )
-        this.ajaxRegionLocation( _this.$route.query.code )
+        // this.ajaxLastmileList( this.$qs.stringify(obj) )
+        // this.ajaxRegionLocation( _this.$route.query.code )
         // console.log(this.$route,'router')
       }
       this.$emit('childList',this.markers)
@@ -373,8 +373,8 @@
       showCountry(data){
         // console.log(data,'data',this.markers)
         this.center={
-                   lat:data.lat,
-                   lng:data.lng
+                   lat:data.cnt_lat,
+                   lng:data.cnt_lng
                  }
         this.defaultZoom=data.zoom
         this.getLastmileList( [] )
@@ -382,7 +382,7 @@
         let obj={}
         obj['country']=data.country
         this.ajaxLastmileList( this.$qs.stringify(obj) )
-        this.ajaxRegionLocation( data.location_code )
+        // this.ajaxRegionLocation( data.location_code )
         this.country=data.country
         this.location_code=data.location_code
         this.setback(false)
@@ -392,10 +392,10 @@
       showLastmileByRegion(id,name,level,poly){
           // console.log(id,name,level,poly,'location_code,has_next_level')
           if(id){
-            this.ajaxLastmileListRegion(id)
+            // this.ajaxLastmileListRegion(id)
           }
           if(level){
-            this.ajaxRegionLocation( id )
+            // this.ajaxRegionLocation( id )
           }else{
             this.pathArr=[]
             this.pathArr.push(poly)
@@ -436,8 +436,8 @@
       },
       backGo(newval,oldval){
          if(!newval&&this.country&&this.location_code){
-             this.ajaxLastmileList( this.country )
-             this.ajaxRegionLocation( this.location_code )
+            //  this.ajaxLastmileList( this.country )
+            //  this.ajaxRegionLocation( this.location_code )
          }
       },
       country_list:{
@@ -460,8 +460,8 @@
 
                  if(index==0){
                    this.center={
-                     lat:el.lat,
-                     lng:el.lng
+                     lat:el.cnt_lat,
+                     lng:el.cnt_lng
                    }
                    
                  }
@@ -493,8 +493,8 @@
                  if(_this.$route.query){
                     if(_this.$route.query.country==el.country){
                         _this.center={
-                                   lat:el.lat,
-                                   lng:el.lng
+                                   lat:el.cnt_lat,
+                                   lng:el.cnt_lng
                                  }
                         _this.defaultZoom=el.zoom
                     }
@@ -518,7 +518,7 @@
   }
   .positionRight{
       position: absolute;
-      top:20px;
+      top:10px;
       right:0;
       z-index:3000;
       

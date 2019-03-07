@@ -6,12 +6,12 @@
     <l-map style="width: 100%; height: 500px;" :zoom="zoom" :center="center">
       <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
       <l-marker :key="index" v-for="(m, index) in markers" :lat-lng="m.lat_lng"  @click="backTo('/mapDetail',m.content.country,m.content.location_code)">
-        <l-icon
+        <!-- <l-icon
           :icon-url="m.icon.iconUrl"
           :icon-size="m.icon.iconSize"
           :icon-anchor="m.icon.iconAnchor"
           >
-        </l-icon>
+        </l-icon> -->
       </l-marker>
       
     </l-map> 
@@ -39,7 +39,7 @@ export default {
       zoom: 4,
       center: L.latLng(8, 110),
       url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-      attribution: '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      attribution: '',
       marker: L.latLng(8, 110),
       text: 'this is a marker',
 

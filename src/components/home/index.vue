@@ -324,7 +324,7 @@ export default {
   },
 
   mounted() {
-      this.ajaxMap()
+    //   this.ajaxMap()
     // this.getSellerRate()
     // window.addEventListener('scroll', this.handleScroll)
     // document.documentElement.scrollTop=0

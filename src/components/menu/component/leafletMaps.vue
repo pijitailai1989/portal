@@ -58,9 +58,9 @@ export default {
   },
   data () {
     return {
-      centerData: L.latLng(8, 110),
+      centerData: [8, 110],
       url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-      attribution: '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      attribution: '',
       marker: L.latLng(8, 110),
       text: 'this is a marker',
 
@@ -116,8 +116,8 @@ export default {
         const _this=this;
           let obj={}
         obj['country']=_this.$route.query.country
-        this.ajaxLastmileList( this.$qs.stringify(obj) )
-        this.ajaxRegionLocation( _this.$route.query.code )
+        // this.ajaxLastmileList( this.$qs.stringify(obj) )
+        // this.ajaxRegionLocation( _this.$route.query.code )
         // console.log(this.$route,'router')
       }
       this.$emit('childList',this.markers)
@@ -163,13 +163,12 @@ export default {
       showCountry(data){
         // console.log(data,'data')
         const _this =this;
-        this.defaultZoom = data.zoom > 7 ? 10 : data.zoom;
         this.getLastmileList( [] )
         this.getRegionLocation( [] )
         let obj={}
         obj['country']=data.country
-        this.ajaxLastmileList( this.$qs.stringify(obj) )
-        this.ajaxRegionLocation( data.location_code )
+        // this.ajaxLastmileList( this.$qs.stringify(obj) )
+        // this.ajaxRegionLocation( data.location_code )
         this.country=data.country
         this.location_code=data.location_code
         this.setback(false)
@@ -177,21 +176,24 @@ export default {
         // console.log(this.country,'this.country')
         
         // console.log( _this.defaultZoom,' _this.defaultZoom')
-        this.$set(this.centerData,'lat',data.lat)
-        this.$set(this.centerData,'lng',data.lng)
-        //  _this.centerData=[
-        //            data.lat,
-        //            data.lng
-        // ]
+        // this.$set(this.centerData,'lat',data.lat)
+        // this.$set(this.centerData,'lng',data.lng)
+         _this.centerData=[
+                   data.cnt_lat,
+                   data.cnt_lng
+        ]
+        setTimeout(() => {
+           this.defaultZoom = data.zoom;
+        }, 500);
         // console.log(this.centerData,'this.center showCountry')
       },
       showLastmileByRegion(id,name,level,poly){
           // console.log(id,name,level,poly,'location_code,has_next_level')
           if(id){
-            this.ajaxLastmileListRegion(id)
+            // this.ajaxLastmileListRegion(id)
           }
           if(level){
-            this.ajaxRegionLocation( id )
+            // this.ajaxRegionLocation( id )
           }else{
             this.pathArr=[]
             this.pathArr.push(poly)
@@ -233,8 +235,8 @@ export default {
       },
       backGo(newval,oldval){
          if(!newval&&this.country&&this.location_code){
-             this.ajaxLastmileList( this.country )
-             this.ajaxRegionLocation( this.location_code )
+            //  this.ajaxLastmileList( this.country )
+            //  this.ajaxRegionLocation( this.location_code )
          }
       },
       country_list(newval,oldval) {
@@ -242,7 +244,18 @@ export default {
             this.country_list.forEach( (el,index) => {
               // console.log(this.country_list,'this.country_list')
                let data={}
-                //  data.lastmile_count=''
+                 if(_this.$route.query){
+                    if(_this.$route.query.country==el.country){
+                        _this.centerData=[el.cnt_lat,el.cnt_lng]
+                        // this.$set(_this.centerData,'lat',el.lat)
+                        // this.$set(_this.centerData,'lng',el.lng)
+                        
+                        setTimeout(() => {
+                           _this.defaultZoom = el.zoom;
+                        }, 500);
+                        
+                    }
+                 }
                  if(_this.overview){
                      for(let key in _this.overview){
                        if(el.country==key){
@@ -283,20 +296,7 @@ export default {
                 if(_this.markers.length<_this.country_list.length&&data.lastmile_count){
                      _this.markers.push(data)
                    }
-                 if(_this.$route.query){
-                    if(_this.$route.query.country==el.country){
-                        this.$set(_this.centerData,'lat',el.lat)
-                        this.$set(_this.centerData,'lng',el.lng)
-                  //       _this.centerData=[
-                  //    el.lat,
-                  //    el.lng
-                  //  ]
-                     console.log(el.zoom,this.centerData,'this.center11111111111')
-                        
-                        _this.defaultZoom = el.zoom > 7 ? 10 : el.zoom;
-                        
-                    }
-                 }
+                
                 
             })
 
@@ -310,6 +310,7 @@ export default {
     height:100%;
 	width:100%;
 	padding:0px;
+  position: relative;
   }
    .ser{
      margin-top:90px;
@@ -335,7 +336,7 @@ export default {
 }
 .positionRight{
       position: absolute;
-      top:20px;
+      top:10px;
       right:0;
       z-index:1000;
       

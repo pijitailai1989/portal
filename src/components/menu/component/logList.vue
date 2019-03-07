@@ -62,7 +62,7 @@
     beforeMount() {},
 
     mounted() {
-        console.log(this.postItem,'postItem')
+        // console.log(this.postItem,'postItem')
     },
 
     methods: {
