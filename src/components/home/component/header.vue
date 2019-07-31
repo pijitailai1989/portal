@@ -87,7 +87,7 @@
                               <a>
                                  <span @click="toggleLang('en')" :style="{color:$i18n.locale == 'en'?'#F4B33D':''}" :class="[$i18n.locale == 'en'?'active':'']">English</span>
                                   |  
-                                 <span @click="toggleLang('zh')" :style="{color:$i18n.locale == 'zh'?'#F4B33D':''}" :class="[$i18n.locale == 'zh'?'active':'']">繁体中文</span> 
+                                 <span @click="toggleLang('zh')" :style="{color:$i18n.locale == 'zh'?'#F4B33D':''}" :class="[$i18n.locale == 'zh'?'active':'']">简体中文</span> 
                               </a>
                             </li>
                         </ul>
@@ -223,7 +223,7 @@ export default {
     width: 100%;
     min-height: 96px;
     background-color: #FCFCFC;
-    z-index: 999;
+    z-index: 1001;
     -webkit-transition: background-color .2s ease;
     transition: background-color .2s ease;
     -webkit-box-shadow: 0 6px 24px rgba(0,0,0,.19);
@@ -409,7 +409,7 @@ export default {
     }
 
     .container {
-      width: 1020px;
+      width: 1040px;
     }
 
     .navbar-toggle {

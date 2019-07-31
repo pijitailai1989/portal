@@ -41,9 +41,21 @@
                   align="center">
                 </el-table-column>
                 <el-table-column
+                  prop="last_mile_service"
+                  :label="news.ServiceName"
+                  align="center"
+                  width="160">
+                </el-table-column>
+                <el-table-column
+                  prop="last_mile"
+                  :label="news.Lastmile"
+                  align="center">
+                </el-table-column>
+                <el-table-column
                   prop="actual_expense"
                   :label="news.NDYF"
-                  align="center">
+                  align="center"
+                  width="200">
                   <template slot-scope="scope">
                     {{scope.row.actual_currency}} {{scope.row.actual_expense}}
                   </template>
@@ -51,7 +63,8 @@
                 <el-table-column
                   prop="spider_expense"
                   :label="news.SPYF"
-                  align="center">
+                  align="center"
+                  width="200">
                   <!-- :render-header="renderHeader" -->
                   <template slot-scope="scope">
                     {{scope.row.spider_currency}} {{scope.row.spider_expense}}
@@ -60,7 +73,8 @@
               </el-table>
           </div>
           <p class="tip"><span v-if="tableItems > 1000">{{news.TSJJSQ}}</span></p>
-          <div class="flexs j-end">
+          <div class="flexs j-between">
+              <div class="flexs a-center" @click="clickTo('/freightContrast')" style="color:#2F9AC0;fong-size:22px;cursor: pointer;"><i class="iconfont icon-fanhui1" style="color:#2F9AC0;font-size:20px;margin-right:5px;" />{{news.btn}}</div>
               <ul class="fee-box">
                   <li>{{news.NDYFZE}}：<b>{{currency+' '+actual_cost}}</b></li>
                   <li>{{news.SPDYFZE}}：<b>{{currency}}<span class="bigger"> {{spider_cost}}</span></b></li>
@@ -77,7 +91,7 @@ export default {
       Pid: '',
       origin: '',
       actual_cost: 0,
-      currency: 'CNY',
+      currency: 'USD',
       spider_cost: 0,
       tableData: [],
       excelUrl: '/seller-tools/compare-file-download?processID=',
@@ -103,12 +117,18 @@ export default {
   },
   mounted() {
     // this.getDatas()
+    var text = ''
+    if(this.$i18n.locale=='en'){
+      text = 'Loading...'
+    }else if(this.$i18n.locale=='zh'){
+      text = '正在加载中...'
+    }
     this.loadingInstance = this.$loading({
-            text: "正在加载中...",
+            text: text,
             target: document.querySelector('#dataList')
         })
         // console.log(this.loadingInstance, 'jjsjfjdj')
-    this.timeOut = setInterval(() => this.getDatas(), 1500)
+    this.timeOut = setInterval(() => this.getDatas(), 3000)
   },
   // ,
   // computed: {
@@ -120,10 +140,13 @@ export default {
   //     }
   // },
   methods: {
+    clickTo(to){
+      this.$router.push(to);
+    },
     getDatas() {
       this.Pid = this.$route.query.data
       this.$http.get('/seller-tools/compare-file-process?processID='+ this.Pid).then(res => {
-          console.log(res.data, '')
+          // console.log(res.data, '')
           if(res.data.status === 'pending') {
               this.currentItem = res.data.progress[0]
               this.totleItems = res.data.progress[1]
@@ -155,14 +178,17 @@ export default {
     // renderHeader (h, params) {
     //   return [h('span', params.column.label),h('span', '（'+this.currency+'）')]
     // }
-  }
+  },
+  destroyed () {
+          clearInterval(this.timeOut)
+      }
 }
 
 </script>
 
 <style scoped>
     .display-table{
-      width: 950px;
+      width: 1100px;
       margin: 100px auto;
     }
     .table-tools{

@@ -34,6 +34,18 @@
       @click="showLastmileByRegion(poly.id,poly.name, poly.next_level,poly)"
       >
       </l-polygon>
+      <l-polygon
+      :key="poly.id + index +index"
+      v-for="(poly, index) in pathArr1"
+      :lat-lngs="poly.paths"
+      :color="color"
+      :weight="weight"
+      :opactiy="opactiyCity"
+      :fillColor="color"
+      :fillOpacity="opactiyCity"
+      @click="showLastmileByRegion(poly.id,poly.name, poly.next_level,poly)"
+      >
+      </l-polygon>
     </l-map> 
     
   </div>
@@ -49,9 +61,13 @@ export default {
             type: String,
             default: ''
       },
+      childCity: {
+            type: Object,
+            default:{}
+      },
       childNameMap:{
-        tyle:Object,
-        default:{}
+            type: Object,
+            default:{}
       }
     },
   components: {
@@ -72,8 +88,9 @@ export default {
       text: 'this is a marker',
 
       color:'#F4B33D',
-      opactiy:0.4,
-      weight:1,
+      opactiy:0.1,
+      opactiyCity:0.4,
+      weight:.2,
       markers: [],
       defaultZoom:4,
       infoWinOpen:false,
@@ -91,6 +108,7 @@ export default {
       },
       
       pathArr:[],
+      pathArr1:[],
       country:'',
       location_code:'',
       infoWindowPos:null,
@@ -105,8 +123,8 @@ export default {
             'country_list','overview','lastmileList','regionLocation','backGo'
         ]),
         news(){
-       return this.$t('news')
-      }
+         return this.$t('news')
+        }
     },
 
     beforeMount() {},
@@ -114,20 +132,18 @@ export default {
       
     },
     mounted() {
-      this.ajaxOverviewCountry()
-      this.ajaxCountrylist()
-      
-      // console.log(this.markers,'this.markers')
       this.getLastmileList( [] )
+      
+      
       if(this.$route.query.country){
         const _this=this;
-          let obj={}
-        obj['country']=_this.$route.query.country
-        this.ajaxLastmileList( this.$qs.stringify(obj) )
+        this.ajaxLastmileListRegion( _this.$route.query.code )
         this.ajaxRegionLocation( _this.$route.query.code )
-        // console.log(this.$route,'router')
+        this.country= this.$route.query.country
       }
       this.$emit('childList',this.markers)
+      this.ajaxOverviewCountry()
+      this.ajaxCountrylist()
     },
 
     methods: {
@@ -149,7 +165,7 @@ export default {
                 _this.infoWindowPos={
                    lat:data.lat,
                    lng:data.lng
-                 }
+                }
                 _this.infoWinOpen=true;
                 _this.infoText=_this.overview[key]
              }
@@ -170,7 +186,8 @@ export default {
       showCountry(data){
         // console.log(data,'data')
         const _this =this;
-        
+        this.opactiy=0.1;
+        this.pathArr1=[];
         
         // this.$set(this.centerData,'lat',data.lat)
         // this.$set(this.centerData,'lng',data.lng)
@@ -180,21 +197,25 @@ export default {
         ]
         this.getLastmileList( [] )
         this.getRegionLocation( [] )
-        let obj={}
-        obj['country']=data.country
-        this.ajaxLastmileList( this.$qs.stringify(obj) )
+        // let obj={}
+        // obj['country']=data.country
+        // this.ajaxLastmileList( this.$qs.stringify(obj) )
+        this.ajaxLastmileListRegion(data.location_code)
         this.ajaxRegionLocation( data.location_code )
         this.country=data.country
         this.location_code=data.location_code
         this.setback(false)
-        this.$emit('childPost',this.country)
+        
+
         setTimeout(() => {
            this.defaultZoom = data.zoom;
         }, 500);
-        
-        // console.log(this.centerData,'this.center showCountry',data.lat,data.lng,this.defaultZoom)
+        var date = { c:data.country,lc:data.location_code }
+        this.$emit('childPost',date)
+        // console.log(this.centerData,'this.center showCountry',this.defaultZoom,data)
       },
       showLastmileByRegion(id,name,level,poly){
+          this.opactiy=0
           // console.log(id,name,level,poly,'location_code,has_next_level')
           if(id){
             this.ajaxLastmileListRegion(id)
@@ -202,12 +223,13 @@ export default {
           if(level){
             this.ajaxRegionLocation( id )
           }else{
-            this.pathArr=[]
-            this.pathArr.push(poly)
+            this.pathArr1=[]
+            this.pathArr1.push(poly)
           }
           this.setback(true)
           // console.log(this.pathArr,'pathArr')
-          this.$emit('childPost',this.country)
+          var data = { c:id,lc:this.$route.query.code }
+          this.$emit('childPost',data)
           
       }
     },
@@ -226,10 +248,11 @@ export default {
       childProvince(newval,oldval){
           const _this=this;
           if(newval){
-              // console.log(newval,oldval,'newval,oldval')
+              // console.log(newval,'newval,oldval',this.markers)
 
               _this.markers.forEach(el=>{
                 if(el.content['country']==newval){
+                    // console.log(el.content,'el.content')
                     _this.showCountry(el.content);
                     return;
                 }
@@ -238,11 +261,28 @@ export default {
 
           }
       },
+      childCity(newval,oldval){
+          //  console.log(newval,'newval')
+           const _this=this;
+           if(newval.type==0){
+               _this.markers.forEach(el=>{
+                 if(el.content['location_code']==newval.c){
+                     _this.showCountry(el.content);
+                     return;
+                 }
+               })
+           }else if(newval.type==1){
+               _this.regionLocation.forEach(el => {
+                 if(el.id==newval.c){
+                   this.showLastmileByRegion(el.id,el.name,el.next_level,el) 
+                 }
+               })
+           }
+      },
       childNameMap(newval,oldval){
         const _this=this;
-        // console.log(newval,oldval,'11')
         if(newval){
-          //  _this.showCountry(newval);
+           _this.showCountry(newval);
         }
       },
       regionLocation(newval,oldval){
@@ -251,11 +291,12 @@ export default {
       },
       backGo(newval,oldval){
          if(!newval&&this.country&&this.location_code){
-             this.ajaxLastmileList( this.country )
+            //  this.ajaxLastmileList( this.country )
              this.ajaxRegionLocation( this.location_code )
          }
       },
-      country_list(newval,oldval) {
+      country_list:{
+        handler:function(newval,oldval){
            const _this = this;
             this.country_list.forEach( (el,index) => {
               // console.log(this.country_list,'this.country_list')
@@ -269,6 +310,7 @@ export default {
                         setTimeout(() => {
                            _this.defaultZoom = el.zoom;
                         }, 500);
+
                         
                     }
                  }
@@ -300,7 +342,7 @@ export default {
                  }
                data.position={lat:el.lat,lng:el.lng}
               //  this.markers.push(data)
-              //  console.log(this.markers,'this.markers')
+               
 
                 if(_this.markers.length<_this.country_list.length&&data.lastmile_count){
                      _this.markers.push(data)
@@ -308,7 +350,9 @@ export default {
                  
                 
             })
+            
 
+       },deep:true
        }
     }
 }

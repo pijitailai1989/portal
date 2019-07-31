@@ -67,6 +67,7 @@ export default {
                   _this.xData.forEach( (el,index)=>{
                       if(el>9.9&&el<10.1){
                           len = index;
+                        //   console.log(len,'len')
                           return;
                       }
                   })

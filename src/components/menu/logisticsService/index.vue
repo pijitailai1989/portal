@@ -8,34 +8,33 @@
                 <el-col :span="3" class="label-title">
                     <label class="Mandatory">{{menu.goods_to}}</label>
                 </el-col>
-                <el-col :span="4">
+                <el-col :span="6">
                     <el-form-item>
                     <el-select
                         v-model="selectedCountry"
                         filterable
-                        class="custom-made"
-                        style="width:113px;">
-                        <el-option v-for="(item,index) in countryList" :label="item.name" :value="item.code" :key="index"></el-option>
+                        class="custom-made" style="width:180px;"
+                        @change="countryFromFn">
+                        <el-option v-for="(item,index) in countryList" :label="item.name" :value="item.country_code" :key="index"></el-option>
                     </el-select>
                     </el-form-item>
                 </el-col>
-                <el-col :span="4">
+                <el-col :span="8">
                     <el-form-item>
                     <el-select
                         v-model="selectedProvince"
                         filterable
-                        class="custom-made"
-                        style="width:113px;">
-                        <el-option v-for="(item,index) in provinceList" :label="item.name" :value="item.code" :key="index"></el-option>
+                        class="custom-made" style="width:250px;">
+                        <el-option v-for="(item,index) in provinceList" :label="item.name" :value="item.location_code" :key="index"></el-option>
                     </el-select>
                     </el-form-item>
                 </el-col>
-                <el-col :span="3" :offset="2" class="label-title">
+                <el-col :span="3" :offset="0" class="label-title">
                     <label  class="Mandatory">{{menu.parcel_weighs}}</label>
                 </el-col>
-                <el-col :span="8">
+                <el-col :span="4">
                     <el-form-item>
-                        <div class="custom-made">
+                        <div class="custom-made" style="width:90px;">
                             <el-input type="text" required="required" pattern="(?!(0[0-9]{0,}$))[0-9]{1,}[.]{0,}[0-9]{0,3}" title="最多3位小数点" v-model="form.weight" :placeholder="menu.Please_weight"></el-input>
                             <i class="units">kg</i>
                         </div>
@@ -85,11 +84,12 @@
                     <div>
                         <div style="max-width: 89px; height: 39px; margin: 0 auto;">
                             <img
-                                :src="baseURL+scope.row.lastmile_logo"
-                                style="display: block;width: 100%; height: 100%;">
+                                :src="baseURL + scope.row.lastmile_logo"
+                                style="display: block;width: 100%; height: 100%;"
+								v-if="scope.row.lastmile_logo">
                         </div>
                         <p style="font-size: 12px; text-align: center;">{{scope.row.lastmile_name}}</p>
-                        <p style="font-size: 12px; text-align: center;">{{scope.row.service_name}}</p>
+                        <!-- <p style="font-size: 12px; text-align: center;">{{scope.row.service_name}}</p> -->
                     </div>
                 </template>
             </el-table-column>
@@ -107,6 +107,15 @@
                     <p class="rank-text">{{ scope.row.score }}{{menu.points}}</p>
                 </template>
             </el-table-column> -->
+            <el-table-column
+                prop="date"
+                :label="menu.Product"
+                align="center">
+                <template slot-scope="scope">
+                    <!-- <range-slider style="width: 63%;" :min="scope.row.claimed_min_lead_time" :max="scope.row.claimed_max_lead_time"/> -->
+                    <p style="font-size: 12px; text-align: center;">{{scope.row.service_name}}</p>
+                </template>
+            </el-table-column>
             <el-table-column
                 prop="date"
                 :label="menu.Delivery_time"
@@ -184,38 +193,36 @@ export default {
     mounted() {
         this.getDistrictData('default');
         this.acceptDefaults = this.$route.params.dataObj
-        console.log(this.acceptDefaults, '收到的参数')
     },
 	watch: {
-		selectedCountry: function () {
-			this.updateCity()
-		}
 	},
 
     methods: {
+        countryFromFn(){
+           this.updateCity()
+        },
         getDistrictData(arg) {
             this.$http.get('/spider-product/on-search-products').then(res => {
-                console.log(res.data, '111222333')
                 this.responseData = res.data
 	            this.countryList = res.data
 	            if(arg === 'default') {
                     if(this.$route.params.dataObj){
-                    	console.log(this.acceptDefaults,'穿件来的参数')
+                    	// console.log(this.acceptDefaults,'穿件来的参数')
                         for (let key in res.data) {
 	                        let result = res.data[key]
-                            console.log(result,'生成的变量')
-                            console.log(this.acceptDefaults.destinationInit.code,'错误的原因')
-                            if(this.acceptDefaults.destinationInit.code === result.code){
-	                            this.selectedCountry = result.code
-                                console.log(this.selectedCountry,'结果1')
-	                            this.selectedProvince =result.province[0].code;
-	                            console.log(this.selectedProvince,'结果2')
+                            // console.log(result,'生成的变量')
+                            // console.log(this.acceptDefaults.destinationInit.code,'错误的原因')
+                            if(this.acceptDefaults.destinationInit.country_code === result.country_code){
+	                            this.selectedCountry = result.country_code
+                                // console.log(this.selectedCountry,'结果1')
+	                            this.selectedProvince =result.capital;
+	                            // console.log(this.selectedProvince,'结果2')
                                 break;
                             }
                         }
 	                    this.form.weight = this.acceptDefaults.weightInit
                     }
-		            this.updateCity()
+                    this.updateCity()
                 }
 	            if(this.$route.params.dataObj){
 		            this.searchProductsData()
@@ -225,9 +232,9 @@ export default {
         updateCity() {
             for(let i in this.responseData){
                 let obj = this.responseData[i]
-                if(obj.code === this.selectedCountry){
+                if(obj.country_code === this.selectedCountry){
                     this.provinceList = obj.province
-	                this.selectedProvince = this.provinceList[0].code;
+	                this.selectedProvince = obj.capital;
                     break;
                 }
             }
@@ -244,7 +251,7 @@ export default {
                data.dim=`${_this.form.length},${_this.form.width},${_this.form.height}`;
             }
             this.$http.get('/spider-product/products?' + this.$qs.stringify(data)).then(res => {
-                console.log(res.data, '产品数据')
+                // console.log(res.data, '产品数据')
                 this.isEmpty = true
                 if(res.status === 200 && res.data.length > 0){
                     this.productTable = res.data
@@ -313,6 +320,14 @@ export default {
     .custom-made{
         position: relative;
         width: 240px;
+    }
+    .custom-made2{
+        position: relative;
+        width: 200px;
+    }
+    .custom-made1{
+        position: relative;
+        width: 100px;
     }
     .units{
         position: absolute;

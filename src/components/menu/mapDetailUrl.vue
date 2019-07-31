@@ -1,26 +1,10 @@
 <template>
   <div style="height:100vh;" class="flexs columns">
-    <header>
-        <HeaderCmp/>   
-    </header>
-    <section class="flexs" style="padding:0;">
+    <section class=" flexs" style="padding:0;">
         <aside class="flexs columns">
             <div style="background:#2F9AC0;height:50px;padding:0 10px;position: relative;" class="flexs a-center j-center">
-                 <i class="iconfont icon-web-icon-ico" style="color: #FFF;font-size: 28px" v-show="backGo" @click="backGO"/>
+                 <i class="iconfont icon-web-icon- ico" style="color: #FFF;font-size: 28px" v-show="backGo" @click="backGO"/>
                  <p style="color:white;font-size:16px;">{{news.FB}}</p>
-             </div>
-             <div class="flexs a-center" style="hieght:50px;background:#FCFCFC;padding:5px 5px 0 5px;" v-show="selectedProvince">
-                 <el-row class="from-row flexs a-center">
-                     <el-col :span="4" :offset="1" class="label-title">
-                          <label class="Mandatory"> {{news.CFD}}</label>
-                      </el-col>
-                      <el-col :span="9" :offset="1" style="padding: 0 15px;">
-                          <label style="font-size:16px;color:#333;"> {{fromProvince}}</label>
-                      </el-col>
-                      <el-col :span="9" style="padding: 0 15px;">
-                          <label style="font-size:16px;color:#333;"> {{fromCity}}</label>
-                      </el-col>
-                 </el-row>
              </div>
              <div class="flexs a-center selects" style="hieght:50px;background:#FCFCFC;" v-show="selectedProvince">
                  <el-row class="from-row flexs a-center">
@@ -32,19 +16,19 @@
                               v-model="selectedProvince"
                               filterable
                               class="custom-made"
-                              @change="selectFromProvince"
+                              @change="provinceFn"
                               >
-                              <el-option v-for="(item,index) in mapCountry" :label="item.name" :value="item.country_code" :key="index"></el-option>
+                              <el-option v-for="(item,index) in mapCountry" :label="item.name" :value="item.code" :key="index"></el-option>
                           </el-select>
                       </el-col>
                       <el-col :span="9">
                           <el-select
-                              v-model="selectedFromCity"
+                              v-model="selectedCity"
                               filterable
                               class="custom-made"
-                              @change="selectFromCity"
+                              @change="cityFn"
                               >
-                              <el-option v-for="(item,index) in mapCity" :label="item.name" :value="item.location_code" :key="index"></el-option>
+                              <el-option v-for="(item,index) in mapCity" :label="item.name" :value="item.code" :key="index"></el-option>
                           </el-select>
                       </el-col>
                  </el-row>
@@ -53,16 +37,7 @@
                  <div v-if="submitShow" class="yunfei active" @click="echartCon">{{news.YF}}</div>
                  <div v-else class="yunfei">{{news.YF}}</div>
              </div>
-             <div class="scrollbar listss" v-if="lastmileList.length<=0&&!selectedProvince" style="">
-                      <ul class="cName">
-                          <li v-for="(item,index) in nameList" :key="index" style="padding:10px 30px;border:1px solid #C3CCDD;margin:5px;" @click="listNameMap(item.content)">
-                               <p>{{item.country_name}}</p>
-                               <p style="padding:5px 0;">{{item.lastmile_count}}&nbsp;{{news.GFWS}}</p>
-                          </li>
-                      </ul>
-                      
-             </div>
-             <div class="scrollbar list" v-else-if="searchArr1.length>=1||searchArr2.length>=1">
+             <div class="scrollbar list" v-if="searchArr1.length>=1||searchArr2.length>=1">
                   <div v-show="searchArr1.length>=1">
                      <log-list @childPost="childListFn" @childPost3="childListFn3" @childPost1="childListFnIcon" v-for="(item,index) in searchArr1" :class="[selectIndex==index?'active':'']" :key="index" :post-item="item" @click.native="selectClick(index,item.lastmile_code)"></log-list>
                   </div>
@@ -71,16 +46,27 @@
                      <log-list @childPost="childListFn" @childPost3="childListFn3" @childPost1="childListFnIcon" v-for="(item,index) in searchArr2" :class="[selectIndex1==index?'active':'']" :key="index" :post-item="item" @click.native="selectClick1(index,item.lastmile_code)"></log-list>
                   </div>
              </div>
-             
              <div class="scrollbar list" v-else>
-                  <log-list @childPost="childListFn" @childPost3="childListFn3" @childPost1="childListFnIcon"  v-for="(item,index) in lastmileList" :class="[selectIndex==index?'active':'']" :key="index" :post-item="item" @click.native="selectClick(index,item.lastmile_code)"></log-list>
-                  <div v-show="lastmileList.length<=0" style="text-align:center;height:80px;line-height:80px;">{{news.nodata}}</div>
+                 
+                  <div v-if="lastmileList.length<=0" style="">
+                      <ul class="cName">
+                          <li v-for="(item,index) in nameList" :key="index" style="padding:10px 30px;border:1px solid #C3CCDD;margin:5px;" @click="listNameMap(item.content)">
+                               <p>{{item.country_name}}</p>
+                               <p style="padding:5px 0;">{{item.lastmile_count}}&nbsp;{{news.GFWS}}</p>
+                          </li>
+                      </ul>
+                      
+                  </div>
+                  <log-list v-else @childPost="childListFn" @childPost3="childListFn3" @childPost1="childListFnIcon"  v-for="(item,index) in lastmileList" :class="[selectIndex==index?'active':'']" :key="index" :post-item="item" @click.native="selectClick(index,item.lastmile_code)"></log-list>
+                 
                   
              </div>
         </aside>
         <main>
-              <leaflet-map  v-if="maps.map==1" @childPost="childFn" @childList="childListName" :childProvince="provinceText"  :childCity="cityText" :childNameMap="nameMap"></leaflet-map>
-              <GoogleMap v-else @childPost="childFn" @childList="childListName" :childProvince="provinceText"  :childCity="cityText" :childNameMap="nameMap"></GoogleMap>
+             
+              
+              <leaflet-map  v-if="maps.map==1" @childPost="childFn" @childList="childListName" :childProvince="provinceText" :childNameMap="nameMap"></leaflet-map>
+              <GoogleMap v-else @childPost="childFn" @childList="childListName" :childProvince="provinceText" :childNameMap="nameMap"></GoogleMap>
         </main>
     </section>
     <!-- <footer> -->
@@ -152,7 +138,7 @@
         </div>
         
     </MessageBoxs>
-    <MessageBoxs v-if="echartAlert" @posttoparent="childListFn4" :width="width" :height="height" class="flexs columns">
+    <MessageBoxs v-if="echartAlert" @posttoparent="childListFn4">
         <span slot="header">{{news.YF}}</span>
         <div style="">
             <el-row class="from-row1 flexs a-center row-bg" type="flex">
@@ -160,15 +146,14 @@
                           <label class="Mandatory">{{news.JJDL}} :</label>
                       </el-col>
                       <el-col :span="4" :offset="1">
-                          <label style="font-size:16px;color:#333;"> {{fromCity}}</label>
-                          <!-- <el-select
+                          <el-select
                               v-model="send"
                               filterable
                               class="custom-made"
                               @change="chartsFn()"
                               >
                               <el-option v-for="(item,index) in mapCity" :label="item.name" :value="item.code" :key="index"></el-option>
-                          </el-select> -->
+                          </el-select>
                       </el-col>
                       <el-col :span="2" :offset="1" class="label-title">
                           <label class="Mandatory">{{news.SHD}} :</label>
@@ -180,7 +165,7 @@
                               class="custom-made"
                               @change="chartsFn()"
                               >
-                              <el-option v-for="(item,index) in mapCity1" :label="item.name" :value="item.location_code" :key="index"></el-option>
+                              <el-option v-for="(item,index) in mapCity" :label="item.name" :value="item.code" :key="index"></el-option>
                           </el-select>
                       </el-col>
                       <el-col :span="3">
@@ -200,7 +185,7 @@
                       </el-col>
             </el-row>
         </div>
-        <div style="padding:10px 20px 0;width:100%;height:calc(80vh - 140px);">
+        <div style="padding:10px 20px 0;width:1000px;">
             <!-- <line-chart
             
             width="100%"
@@ -209,12 +194,9 @@
             ></line-chart> -->
             <!-- <x-chart :id="id" :xData="lastmileRate.coordinates" :seriesData="echartData" @chartFn="lineChartFn"></x-chart> -->
             <e-chart :xData="lastmileRate.coordinates" :seriesData="echartData" @chartFn="lineChartFn"></e-chart>
-           
         </div>
-        <ul class="flexs inside j-between" style="padding:0 90px 0 60px;">
-            <!-- <li style="" v-for="(item,index) in lastmileRate.coordinates" :key="index">{{item}}</li> -->
-            <li style="margin-left:10px;">{{mindata}}</li>
-            <li style="margin-right:5px;">{{maxdata}}</li>
+        <ul class="flexs inside" style="padding:0 90px 0 60px;">
+            <li style="" v-for="(item,index) in lastmileRate.coordinates" :key="index">{{item}}</li>
         </ul>
     </MessageBoxs>
     <MessageBoxs v-if="serviceAlert" @posttoparent="childListFn2">
@@ -343,16 +325,10 @@
     data () {
         // let option = options.bar
       return {
-          fromProvince:'',
-          fromCapital_code:'',
-          fromCity:'',
-          width:'80%',
-          height:'80%',
           id: 'echart',
         //   option: option,
            steps:2,
            mapCity:[],
-           mapCity1:[],
            listArr:[],
            selectIndex:null,
            selectIndex1:null,
@@ -362,7 +338,7 @@
            serDetail:{},
            countryList:[],
            provinceList:[],
-           selectedFromCity:'',
+           selectedCity:'',
            selectedProvince:'',
            country:'',
            searchArr1:[],
@@ -374,14 +350,10 @@
            receipt:'',
            chartShow:true,
            provinceText:'',
-           cityText:{},
            submitShow:false,
            nameList:[],
            nameMap:{},
            exportCode:null,
-           mindata:null,
-           maxdata:null,
-           echartShow:false
       };
     },
     components: {
@@ -424,13 +396,17 @@
         window.pageYOffset=0
         this.getLastmileList( [] )
         // this.gitLastmileSearch( [] )
-        
+        if(this.$route.query.lang){
+            this.toggleLang(this.$route.query.lang)
+        }else{
+            this.toggleLang('zh')
+        }
         
     },
     methods: {
         ...mapActions('menu',[
-            'ajaxCountrylist','ajaxLastmileCode','ajaxRateCard','ajaxLastmileCountry','ajaxLastmileRate','ajaxMap','ajaxOverviewCountry','ajaxCountrylist',
-            'ajaxNextLocationList','ajaxLastmileSearch','ajaxLastmileMapcountry','ajaxLastmileList','ajaxLastmileListRegion','ajaxExport'
+            'ajaxCountrylist','ajaxLastmileCode','ajaxRateCard','ajaxLastmileCountry','ajaxLastmileRate','ajaxMap',
+            'ajaxNextLocationList','ajaxLastmileSearch','ajaxLastmileMapcountry','ajaxLastmileList','ajaxExport'
         ]),
         ...mapMutations('menu',[
           'setback','getLastmileList','setPriceList','getRateCard','gitNextLocationList',
@@ -443,71 +419,45 @@
            this.setback(false)
         },
         selectClick(index,lastmile_code){
-            // this.selectIndex=index
-            // this.ajaxLastmileCode( lastmile_code )
-            // this.selectIndex1=null
+            // console.log(index,lastmile_code,'index')
+            this.selectIndex=index
+            this.ajaxLastmileCode( lastmile_code )
+            this.selectIndex1=null
         },
         selectClick1(index,lastmile_code){
-            // this.selectIndex1=index
-            // this.selectIndex=null
-            // this.ajaxLastmileCode( lastmile_code )
+            // console.log(index,lastmile_code,'index')
+            this.selectIndex1=index
+            this.selectIndex=null
+            this.ajaxLastmileCode( lastmile_code )
         },
-		reloadForCountryChange(val,location_code) {
-            const _this = this ;
+        childFn(val){
+            // this.gitLastmileSearch( [] )
+            this.country=val
             this.submitShow=false;
-            this.selectedFromCity=''
+            this.mapCity=[]
+            this.selectedCity=''
             this.selectedProvince=''
+            this.selectedProvince=val
+            // this.provinceList=[]
             this.selectIndex=null
             this.selectIndex1=null
-            this.cityText= {
-                         c:val,
-                         type:0
-                     }
-            var num = val.length
-            if(num==2){
-              this.country=val
-              this.selectedProvince=val
-              this.mapCity=[]
-              this.mapCity1=[]
-              this.mapCity.push({location_code:location_code,name:'All'})
-              this.mapCountry.forEach(el => {
-                  let capital = '';
-                  if(el.country_code==val){
-                      el.province.forEach(item =>{
-                         this.mapCity.push(item)
-                         this.mapCity1.push(item)
-                         if (item.location_code == el.capital) capital = item.name;
-                      })
-                      this.fromProvince = el.name
-                      this.fromCity = capital
-                      this.fromCapital_code = el.capital
-                  }
-              })
-              if(this.mapCity[0]){
-                  this.selectedFromCity=this.mapCity[0].location_code
-
-              }
-            }else if(num!=2){
-               _this.mapCountry.forEach(el => {
-                  el.province.forEach( item => {
-                      if(item.location_code==val){
-                          this.country=el.country_code
-                          this.selectedProvince=el.country_code
-                          this.selectedFromCity=item.location_code
-                      }
-                  })
-               })
+            this.mapCountry.forEach(el => {
+                if(el.code==val){
+                    this.mapCity=el.province
+                }
+            })
+            if(this.mapCity[0]){
+                this.selectedCity=this.mapCity[0].code
             }
-            // this.gitLastmileSearch( [] )
-            // this.provinceList=[]
+            
             // this.gitNextLocationList( [] )
-		},
-        childFn(val){
-            this.reloadForCountryChange(val.c,val.lc);
+            // console.log(val,this.countryList,'val')
+            
         },
         childListName(val){
             const _this =this;
             this.nameList=val
+            // console.log(val,'val111111111111')
         },
         listNameMap(data){
             this.nameMap=data;
@@ -518,90 +468,89 @@
             // this.setPriceList([])
             this.ajaxRateCard(val)
             this.exportCode=val;
+            // console.log(val,this.exportCode,'this.exportCod')
         },
         childListFn3(val){
+            // console.log(val,'(index)')
             this.serDetail=val
             this.serviceAlert=true
             this.ajaxRateCard(val.lastmile_code)
+            // console.log('alert')
             this.ajaxLastmileCode( val.lastmile_code )
             this.nameMap=this.nameMap;
+            // console.log(this.lastmileList,'lastmileList3',this.searchArr1,this.searchArr2)
         },
         childListFn1(val){
             this.messAlert=val
         },
         childListFn2(val){
             this.serviceAlert=val
+            // console.log(this.lastmileList,'lastmileList2',this.searchArr1,this.searchArr2)
         },
         childListFn4(val){
             this.echartAlert=val
         },
         async chartsFn(){
-            let data = {}
-            let arr = []
-            this.echartAlert = true;
-            if (this.searchArr.length > 0) {
-                this.searchArr.forEach(el => {
-                    if(el.icon==1){
-                        arr.push(el.lastmile_code)
-                    }
+            let data={}
+            let arr=[]
+            this.echartAlert=true;
+            if(this.searchArr.length>0){
+                this.searchArr.forEach(el=>{
+                   if(el.icon==1){
+                    arr.push(el.lastmile_code)
+                   }
                 })
-            } else {
-                this.lastmileList.forEach(el => {
-                    if (el.icon == 1) {
-                        arr.push(el.lastmile_code)
-                    }
+            }else{
+               this.lastmileList.forEach(el=>{
+                if(el.icon==1){
+                    arr.push(el.lastmile_code)
+                }
                 })
             }
-            data.lastmile = arr;
-            data.day = this.steps
-            data.from = this.fromCapital_code
-            data.to = this.receipt
-            let res = await this.ajaxLastmileRate(this.$qs.stringify(data))
+            data.lastmile=arr;
+            data.day=this.steps
+            data.from=this.send
+            data.to=this.receipt
+            // console.log(arr,'arr')
+            let res = await this.ajaxLastmileRate( this.$qs.stringify(data) )
             // this.chartShow=true;
+            // console.log(res,'45')
             
         },
-
+      
         echartCon(val){
-            let data = {}
-            var arr = []
-            this.echartAlert = true;
-            if (this.searchArr.length > 0) {
-                this.searchArr.forEach(el => {
-                    if (el.icon == 1) {
-                        arr.push(el.lastmile_code)
-                    }
+            let data={}
+            let arr=[]
+            this.echartAlert=true;
+            if(this.searchArr.length>0){
+                this.searchArr.forEach(el=>{
+                   if(el.icon==1){
+                    arr.push(el.lastmile_code)
+                   }
                 })
-            } else {
-                this.lastmileList.forEach(el => {
-                    if (el.icon == 1) {
-                        arr.push(el.lastmile_code)
-                    }
-                })
-            }
-            
-            var num = this.selectedFromCity.length
-            if (num!=2) {
-               data.to = this.selectedFromCity
-               this.receipt = this.selectedFromCity
-            //    console.log(this.receipt,'this.receipt')
-            } else if(num==2) {
-               data.to = this.fromCapital_code
-               this.receipt = this.fromCapital_code
-            //    console.log(this.receipt,'this.receipt1')
-            }
-            this.mapCity.forEach( (el,i)=>{
-                if(el.location_code==this.selectedFromCity&&i==0){
-                     data.to = this.fromCapital_code
-                     this.receipt = this.fromCapital_code
+                
+                // console.log(arr,this.searchArr,'searchArr')
+            }else{
+               this.lastmileList.forEach(el=>{
+                if(el.icon==1){
+                    arr.push(el.lastmile_code)
                 }
-            })
-            data.lastmile = arr;
-            data.day = 2
-            data.from = this.fromCapital_code
-            this.steps = 2
+                })
+                
+                // console.log(arr,this.lastmileList,'lastmileList')
+            }
+            data.lastmile=arr;
+            data.day=2
+            data.from=this.selectedCity
+            data.to=this.mapCity[0].code
+            this.steps=2
+            this.send=this.selectedCity
+            this.receipt=this.mapCity[0].code
+            // console.log(arr,'arr')
             this.ajaxLastmileRate( this.$qs.stringify(data) )
         },
         childListFnIcon(val){
+            
             let arr=[]
             if(this.searchArr.length>0){
                 this.searchArr.forEach(el=>{
@@ -616,18 +565,17 @@
                 }else{
                     this.submitShow=false;
                 }
-                if(arr.length<10000||val.icon==0){
+                if(arr.length<3||val.icon==0){
                     this.setsearchArr(val)
                 }
-                
+                // console.log(arr,val,'searchArr')
             }else{
                this.lastmileList.forEach(el=>{
                 if(el.icon==1){
                     arr.push(el)
                 }
                 })
-                
-                if(arr.length<10000||val.icon==0){
+                if(arr.length<3||val.icon==0){
                     this.setLastmileList(val)
                 }
                 if(val.icon==1){
@@ -637,129 +585,146 @@
                 }else{
                     this.submitShow=false;
                 }
+                // console.log(arr,val,'lastmileList')
             }
+            
+            
             
         },
         handleScroll(){
             let clientWidth=this.$refs.scrollCont.clientWidth
             let scrollLeft=this.$refs.scrollCont.scrollLeft
             let scrollTop=this.$refs.scrollCont.scrollTop
+            // console.log(scrollLeft,scrollTop,'scrollHeight')
             this.$refs.scrollHeadr.scrollLeft=scrollLeft
 
         },
-        selectFromProvince(val){
-            this.submitShow=false;
-            this.searchArr1=[]
-            this.searchArr2=[]
-            this.provinceText = val
-            this.mapCountry.forEach(el=>{
-                if(el.country_code==val){
-                  this.reloadForCountryChange(val,el.location_code);
+        provinceFn(val){
+            this.provinceText=val
+            this.selectedCity=''
+            this.mapCountry.forEach(el => {
+                if(el.code==val){
+                    this.mapCity=el.province
                 }
             })
-            this.selectedProvince = val
-
-            let data = {country : val};
-            // this.ajaxLastmileList(this.$qs.stringify(data))
             
-            this.nameList.forEach(el => {
-               if (val == el.content.country) { 
-                   let code = el.content.location_code
-                   this.$router.push({path: '/mapDetail', query: {country : val, code : code}})
+            this.selectedCity=this.mapCity[0].code
+            let data={}
+           data['country']=val;
+           data['province']=this.selectedCity
+           this.ajaxLastmileList( this.$qs.stringify(data) )
+           this.nameList.forEach(el=>{
+               if(val==el.content.country){
+                   let lang = null
+                   if(this.$route.query.lang){
+                       lang = this.$route.query.lang
+                   }
+                   let code=el.content.location_code
+                //    console.log(1111,code)
+                   this.$router.push({path: '/mapDetailUrl', query: {country: val,code:code,lang:lang?lang:'zh'}})
                }
            })
+            // this.gitNextLocationList( [] )
+            // this.ajaxNextLocationList(val)
         },
-        selectFromCity(val){
-            this.submitShow = false;
-            this.selectIndex = null
-            this.selectIndex1 = null
-            this.searchArr1 = []
-            this.searchArr2 = []
-            this.cityText = {
-                         c:val,
-                         type:1
-                     }
-            this.mapCity.forEach( (el,i)=>{
-                if(el.location_code==val&&i==0){
-                     this.cityText = {
-                         c:val,
-                         type:0
-                     }
-                }
-            })
-            
-
-            // console.log(this.selectedProvince,'selectedProvince')
-            // let data={}
-            // data['country']=this.selectedProvince;
-            // var num = val.length
-            
-            // if(num!=2){
-            //    data['province']=val
-               
-            // }
-            // this.ajaxLastmileList(this.$qs.stringify(data))
-            this.ajaxLastmileListRegion(val)
-        }
+        cityFn(val){
+            this.selectIndex=null
+            this.selectIndex1=null
+            this.searchArr1=[]
+            this.searchArr2=[]
+        //    console.log(val,'val')
+           let data={}
+           data['country']=this.selectedProvince;
+           data['province']=val
+        //    data['province']=this.selectedProvince;
+        //    data['city']=val
+        //    data['last_mile_data']=this.lastmileList
+           this.ajaxLastmileList( this.$qs.stringify(data) )
+        },
+        toggleLang(lang) {
+           let en = this.$i18n.locale;
+           if(en != lang){
+                if(lang == 'zh'){
+                    sessionStorage.setItem('locale', 'zh')
+                    this.$i18n.locale = sessionStorage.getItem('locale')
+                    
+                    this.switchLangUrl(this.$i18n.locale)
+                    
+                  } else if (lang == 'en') {
+                    sessionStorage.setItem('locale', 'en')
+                    this.$i18n.locale = sessionStorage.getItem('locale')
+                   
+                    this.switchLangUrl(this.$i18n.locale)
+                 }
+           }
+           
+          
+         },
+         switchLangUrl(lang) {
+             this.$http.get('/set-locale/'+lang).then(res => {
+               if(res.status === 200){
+                 // this.$router.go(0)
+                 // console.log(res.data)
+                 location.reload();
+               }
+             })
+         }
         
     },
 
     watch: {
+        ips(newval,oldval){
+            // console.log(newval,'new;;;ld')
+        },
         selectedProvince(newval,oldval){
            this.nameList.forEach(el=>{
-               if(newval == el.content.country) { 
-                   let code = el.content.location_code
-                   this.$router.push({path: '/mapDetail', query: {country: newval,code:code}})
+               if(newval==el.content.country){
+                   let lang = null
+                   if(this.$route.query.lang){
+                       lang = this.$route.query.lang
+                   }
+                   let code=el.content.location_code
+                //    console.log(1111,code)
+                   this.$router.push({path: '/mapDetailUrl', query: {country: newval,code:code,lang:lang?lang:'zh'}})
                }
            })
         },
-        lastmileList(newval,oldval){
-            this.searchArr1 = []
-            this.searchArr2 = []
-            this.lastmileList.forEach(el => {
-                if (el.active) {
-                    this.searchArr1.push(el)
-                } else {
-                    this.searchArr2.push(el)
-                }
+          lastmileList(newval,oldval){
+              
+             
+              if(this.lastmileList.length>=1){
+                  this.searchArr1=[]
+                  this.searchArr2=[]
+                  this.lastmileList.forEach(el=>{
+                      if(el.active){
+                         this.searchArr1.push(el)
+                      }else{
+                         this.searchArr2.push(el)
+                      }
                       
-            })
-        },
-        mapCountry (newval,oldval){
-            const _this = this
-            if (this.$route.query.country) {
-                 this.selectedProvince = this.$route.query.country
-                 this.mapCountry.forEach(el => {
-                     if (el.country_code == _this.$route.query.country) {
-                         this.mapCity.push({location_code : _this.$route.query.code, name : 'All'})
-                         let capital = '';
-                         el.province.forEach(item => {
-                             _this.mapCity.push(item)
-                             _this.mapCity1.push(item)
-                             if (item.location_code == el.capital)
-                                 capital = item.name;
-                         })
-                         _this.fromProvince = el.name
-                         _this.fromCity = capital
-                         _this.fromCapital_code = el.capital
-                    }
-                })
-                if (this.mapCity.length && this.mapCity[0].location_code) {
-                    this.selectedFromCity = this.mapCity[0].location_code
-                } 
-            }
-        },
-          
-          lastmileRate:{
-              handler:function(newval,oldval){
-              let arr = this.lastmileRate.coordinates
-             if(arr.length>0){
-                 this.mindata = arr[0]
-                 this.maxdata = arr[arr.length - 1]
-             }else{
-                 this.mindata = null
-                 this.maxdata = null
-             }
+                  })
+              }
+            //   console.log(this.searchArr1,this.searchArr2,'this.searchArr1')
+          },
+          mapCountry(newval,oldval){
+
+              if(this.$route.query.country){
+            // console.log(111111111111111,newval)
+                   const _this = this
+                 _this.selectedProvince=_this.$route.query.country
+                 _this.mapCountry.forEach(el => {
+                       if(el.code==_this.$route.query.country){
+                           _this.mapCity=el.province
+                       }
+                   })
+                   if(_this.mapCity[0].code){
+                      _this.selectedCity=_this.mapCity[0].code
+                   }
+                   
+               }
+          },
+          lastmileRate(newval,oldval){
+            //   console.log(11111111111111111)
              this.echartData=[]
              this.lastmileRate.data.forEach(element => {
                  let data={
@@ -769,11 +734,10 @@
                  data.data=element.rate
                  data.data1=element.rate
                  data.type='line'
-                 
                  this.echartData.push(data)
-             })
-          },
-          deep:true
+             });
+             
+            //  console.log(this.lastmileRate,'lastmileRate')
           }
     }
 
@@ -790,11 +754,11 @@
 }
 .inside>li{
   height:22px;
-  /* flex:1; */
+  flex:1;
   text-align: center;
   color:#333;
   font-size:12px;
-  /* border-right:1px solid #DDD; */
+  border-right:1px solid #DDD;
   line-height: 27px;
 
 }
@@ -857,30 +821,18 @@
   aside{
       width:400px;
       background: #fff;
-      border-bottom:2px solid #2F9AC0;
+      border-bottom:1px solid #2F9AC0;
       
   }
   main{
       flex:1;
       position: relative;
-      border-bottom:2px solid #2F9AC0;
-      border-top:1px solid #2F9AC0;
   }
   
   .list{
       overflow-y: scroll;
       overflow-x: none;
       height:calc( 100vh - 323px );
-      /* -webkit-box-flex: 1 ;  
-       -moz-box-flex: 1;                  
-       -webkit-flex: 1;     
-       -ms-flex: 1;          
-       flex: 1;     */
-  }
-  .listss{
-      overflow-y: scroll;
-      overflow-x: none;
-      height:calc( 100vh - 146px );
   }
   footer{
 
@@ -902,7 +854,7 @@
    .priceList{
        /* width:100%; */
        overflow-x: auto;
-       width: 80vw;
+       width: 1000px;
        font-weight: 600;
    }
    .priceList>ul:first-child{
@@ -938,14 +890,14 @@
        line-height: 50px;
    }
    .priceList1{
-       max-width:80vw;
+       max-width:1020px;
       max-height:400px;
       overflow-x: auto;
       overflow-y: auto;
    }
    .boxScroll{
        overflow-y: auto;
-       max-height:76vh;
+       max-height:650px;
    }
    .priceList1>ul{
        width:100%;

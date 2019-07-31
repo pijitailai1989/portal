@@ -11,8 +11,10 @@
                     <div>
                         <div style="max-width: 89px; height: 39px; margin: 0 auto;">
                             <img
-                                :src="baseURL+scope.row.lastmile_logo"
-                                style="display: block;width: 100%; height: 100%;">
+                                :src="baseURL + scope.row.lastmile_logo"
+                                style="display: block;width: 100%; height: 100%;"
+								v-if="scope.row.lastmile_logo">
+                            <p v-else>{{ scope.row.lastmile_name }}</p>
                         </div>
                         <p style="font-size: 12px; text-align: center;">{{scope.row.product_name}}</p>
                     </div>

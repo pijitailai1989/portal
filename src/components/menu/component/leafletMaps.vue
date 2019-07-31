@@ -5,7 +5,7 @@
     </div>
     <l-map style="width: 100%; height: 100%;" :zoom="defaultZoom" :center="centerData" :attributionControl="attributionControl" @update:center="centerUpdated">
       <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
-      <l-marker :key="index" v-for="(m, index) in markers" :lat-lng="m.lat_lng" @click="showCountry(m.content)"  :draggable="draggable"
+      <!-- <l-marker :key="index" v-for="(m, index) in markers" :lat-lng="m.lat_lng" @click="showCountry(m.content)"  :draggable="draggable"
             @mouseover="toggleInfoWindow(m.content)"
             @mouseout="closeInfoWindow()">
         <l-icon
@@ -15,8 +15,8 @@
 
           >
         </l-icon>
-      </l-marker>
-      <l-polygon
+      </l-marker> -->
+      <!-- <l-polygon
       :key="poly.id + index"
       v-for="(poly, index) in pathArr"
       :lat-lngs="poly.paths"
@@ -26,6 +26,17 @@
       :fillColor="color"
       :fillOpacity="opactiy"
       @click="showLastmileByRegion(poly.id,poly.name, poly.next_level,poly)"
+      >
+      </l-polygon> -->
+      <l-polygon
+      :key="poly.id + index"
+      v-for="(poly, index) in pathArr"
+      :lat-lngs="poly.paths"
+      :color="color"
+      :weight="weight"
+      :opactiy="opactiy"
+      :fillColor="color"
+      :fillOpacity="opactiy"
       >
       </l-polygon>
     </l-map> 
@@ -95,7 +106,7 @@ export default {
   },
     computed: {
       ...mapState('menu',[
-            'country_list','overview','lastmileList','regionLocation','backGo'
+            'country_list','overview','lastmileList','regionLocation1','backGo'
         ]),
         news(){
        return this.$t('news')
@@ -111,21 +122,21 @@ export default {
       this.ajaxCountrylist()
       
       // console.log(this.markers,'this.markers')
-      this.getLastmileList( [] )
+      // this.getLastmileList( [] )
       if(this.$route.query.country){
         const _this=this;
-          let obj={}
-        obj['country']=_this.$route.query.country
+        //   let obj={}
+        // obj['country']=_this.$route.query.country
         // this.ajaxLastmileList( this.$qs.stringify(obj) )
         // this.ajaxRegionLocation( _this.$route.query.code )
         // console.log(this.$route,'router')
       }
-      this.$emit('childList',this.markers)
+      // this.$emit('childList',this.markers)
     },
 
     methods: {
       ...mapMutations('menu',[
-          'getLastmileList','getRegionLocation','setback'
+          'getLastmileList','getRegionLocation1','setback'
       ]),
       ...mapActions('menu',[
           'ajaxOverviewCountry','ajaxLastmileList','ajaxRegionLocation','ajaxLastmileListRegion','ajaxCountrylist'
@@ -164,7 +175,7 @@ export default {
         // console.log(data,'data')
         const _this =this;
         this.getLastmileList( [] )
-        this.getRegionLocation( [] )
+        this.getRegionLocation1( [] )
         let obj={}
         obj['country']=data.country
         // this.ajaxLastmileList( this.$qs.stringify(obj) )
@@ -172,7 +183,7 @@ export default {
         this.country=data.country
         this.location_code=data.location_code
         this.setback(false)
-        this.$emit('childPost',this.country)
+        // this.$emit('childPost',this.country)
         // console.log(this.country,'this.country')
         
         // console.log( _this.defaultZoom,' _this.defaultZoom')
@@ -229,8 +240,8 @@ export default {
            _this.showCountry(newval);
         }
       },
-      regionLocation(newval,oldval){
-         this.pathArr=this.regionLocation
+      regionLocation1(newval,oldval){
+         this.pathArr=this.regionLocation1
         //  console.log(newval,'newval1111111111111')
       },
       backGo(newval,oldval){

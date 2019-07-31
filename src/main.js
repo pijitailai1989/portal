@@ -24,10 +24,11 @@ import VueAnalytics from 'vue-analytics'
 import 'leaflet/dist/leaflet.css'
 import  L  from 'leaflet'
 import 'leaflet.icon.glyph';
-//import 'leaflet/dist/leaflet.css'
+// import 'leaflet/dist/leaflet.css'
 //import icon from 'leaflet/dist/images/marker-icon.png';
 //import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-
+import VueCookies from 'vue-cookies'
+Vue.use(VueCookies)
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
@@ -74,6 +75,7 @@ Vue.use(VueLazyload, {
 Vue.config.productionTip = false
 Vue.use(Element,axios);
 Vue.prototype.$echarts = echarts 
+Vue.use(echarts)
 Vue.prototype.$qs = qs
 Vue.prototype.$http = axios
 Vue.prototype.baseURL = process.env.BASE_API;
@@ -88,7 +90,14 @@ axios.defaults.timeout = 300000
 // console.log(axios.defaults.headers['Accept-Language']);
 axios.defaults.headers['Content-Type'] = 'application/json'
 axios.defaults.responseType = 'json'
+// console.log(i18n.locale,'i18n.locale')
 var loading=null;
+var text = ''
+if(i18n.locale=='en'){
+  text = 'Loading...'
+}else if(i18n.locale=='zh'){
+  text = '正在加载中...'
+}
 Vue.prototype.$http.interceptors.request.use(
     function(config) {
       // 处理请求之前的配置
@@ -99,7 +108,7 @@ Vue.prototype.$http.interceptors.request.use(
         ){
         loading = Loading.service({
           lock: true,
-          text: 'Loading',
+          text: text,
           spinner: 'el-icon-loading',
           background: 'rgba(0, 0, 0, 0.7)'
           

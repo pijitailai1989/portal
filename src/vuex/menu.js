@@ -26,6 +26,7 @@ export default {
       overview:{},
       lastmileList:[],
       regionLocation:[],
+      regionLocation1:[],
       backGo:false,
       rateCard:[],
       priceList:[],
@@ -135,62 +136,62 @@ export default {
       state.backGo=data
     },
     getRegionLocation(state,date){
-      let arr=[]
-      if(date.length>=1){
-
-      
-        date.forEach(function(data) {
-        data.geo_json.features.forEach(function(feature) {
-          if (feature.geometry.type === 'MultiPolygon') {
-            feature.geometry.coordinates.forEach(function(coordinates) {
-              arr.push({
-                "id" : data.location_code,
-                "name" : data.name_multi_language.local,
-                "paths" : coordinates.map(linearRing => linearRing.slice(0, linearRing.length - 1).map(([lng, lat]) => ({lat, lng}))),
-                "next_level" : data.has_next_level
-              });
-            });
-          } else if (feature.geometry.type === 'Polygon') {
-            arr.push({
-              "id" : data.location_code,
-              "name" : data.name_multi_language.local,
-              "paths" : feature.geometry.coordinates.map(linearRing => linearRing.slice(0, linearRing.length - 1).map(([lng, lat]) => ({lat, lng}))),
-              "next_level" : data.has_next_level
-            });
-          }
-        });
-      });
-      }
-      state.regionLocation=arr
+        let arr=[]
+            if (date.length >= 1) {
+                date.forEach(function(data) {
+                    if (data.geo_json && data.geo_json.features) {
+                        data.geo_json.features.forEach(function(feature) {
+                            if (feature.geometry.type === 'MultiPolygon') {
+                                feature.geometry.coordinates.forEach(function(coordinates) {
+                                    arr.push({
+                                        "id" : data.location_code,
+                                        "name" : data.name_multi_language.local,
+                                        "paths" : coordinates.map(linearRing => linearRing.slice(0, linearRing.length - 1).map(([lng, lat]) => ({lat, lng}))),
+                                        "next_level" : data.has_next_level
+                                    });
+                                });
+                            } else if (feature.geometry.type === 'Polygon') {
+                                arr.push({
+                                    "id" : data.location_code,
+                                    "name" : data.name_multi_language.local,
+                                    "paths" : feature.geometry.coordinates.map(linearRing => linearRing.slice(0, linearRing.length - 1).map(([lng, lat]) => ({lat, lng}))),
+                                    "next_level" : data.has_next_level
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        state.regionLocation = arr
     },
     getRegionLocation1(state,date){
-      let arr=[]
-      if(date.length>=1){
-
-      
-        date.forEach(function(data) {
-        data.geo_json.features.forEach(function(feature) {
-          if (feature.geometry.type === 'MultiPolygon') {
-            feature.geometry.coordinates.forEach(function(coordinates) {
-              arr.push({
-                "id" : data.location_code,
-                "name" : data.name_multi_language ? data.name_multi_language.local : '-',
-                "paths" : coordinates.map(linearRing => linearRing.slice(0, linearRing.length - 1).map(([lng, lat]) => ({lat, lng}))),
-                "next_level" : false
-              });
+        let arr = [];
+        if (date.length >= 1) {
+            date.forEach(function(data) {
+				if (data.geo_json && data.geo_json.features) {
+                    data.geo_json.features.forEach(function(feature) {
+                        if (feature.geometry.type === 'MultiPolygon') {
+                            feature.geometry.coordinates.forEach(function(coordinates) {
+                                arr.push({
+                                    "id" : data.location_code,
+                                    "name" : data.name_multi_language ? data.name_multi_language.local : '-',
+                                    "paths" : coordinates.map(linearRing => linearRing.slice(0, linearRing.length - 1).map(([lng, lat]) => ({lat, lng}))),
+                                    "next_level" : false
+                                });
+                            });
+                        } else if (feature.geometry.type === 'Polygon') {
+                            arr.push({
+                                "id" : data.location_code,
+                                "name" : data.name_multi_language ? data.name_multi_language.local : '-',
+                                "paths" : feature.geometry.coordinates.map(linearRing => linearRing.slice(0, linearRing.length - 1).map(([lng, lat]) => ({lat, lng}))),
+                                "next_level" : false
+                            });
+                        }
+			        });
+                }
             });
-          } else if (feature.geometry.type === 'Polygon') {
-            arr.push({
-              "id" : data.location_code,
-              "name" : data.name_multi_language ? data.name_multi_language.local : '-',
-              "paths" : feature.geometry.coordinates.map(linearRing => linearRing.slice(0, linearRing.length - 1).map(([lng, lat]) => ({lat, lng}))),
-              "next_level" : false
-            });
-          }
-        });
-      });
-      }
-      state.regionLocation=arr
+        }
+        state.regionLocation1=arr
     },
     getLastmileList(state,data){
       if(data.length>0){
@@ -445,7 +446,7 @@ export default {
     async ajaxRegionLocation({commit},data){
       let {data:res} = await axios.get('/last-mile/map/region-by-location/'+data)
          commit("getRegionLocation",res)
-        //  console.log(res,'res')
+        //  console.log(res,'ajaxRegionLocation')
        return res
     },
     //获取单个物流服务点范围

@@ -1,6 +1,6 @@
 <template> 
   <div class="messageBox flexs a-center j-center"  @click="clickClose">
-      <div>
+      <div :style="{height:height,width:width}">
        <header @click.stop="">
            <slot name="header"></slot>
            <slot name="excel"></slot>
@@ -20,7 +20,16 @@
 
   export default {
     name:'messageBoxs',
-    props:['postMess'],
+    props:{
+        width: {
+      type: String,
+      default: ''
+       },
+       height: {
+         type: String,
+         default: ''
+       },
+    },
     data () {
       return {
       };

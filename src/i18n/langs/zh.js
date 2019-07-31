@@ -1,17 +1,25 @@
 export default {
     news:{
+        btn:'返回',
+        CFD:'出发地',
+        nodata:'无数据',
+        LOADING:'正在加载中...',
         PE:'请输入您的邮箱账号',
         PS:'订阅搜派邮件，随时随地掌握搜派资讯动态',
         LJ:'立即订阅',
         YG:'有关详细信息，请联系我们的销售团队',
         TR:'试试我们的运费计算器',
-        AL:'大量货件，获得更低企业运费',
+        AL:'准备计出每个包裹的快递费用',
         IM:'立即计算',
         PL:'平台服務',
         MG:'搜索末公里公司',
         YD:'预订服务',
         QC:'全程追踪',
         API:'API对接',
+        MG1:'根据您的需求搜索最合适的快递公司',
+        YD1:'',
+        QC1:'全程跟踪',
+        API1:'通过开放API将Spider集成到您的系统中',
         ACS:'根据您的预期服务/包裹特征，在1分钟内找到最合适的物流供应商。在附加的路由查找器还可以根据给定的清单推荐物流公司',
         FG:'覆盖区域',
         FW:'服务商',
@@ -39,8 +47,11 @@ export default {
         DCYFDB:'导出运费对比结果',
         YFDBJG:'运费对比结果',
         SHG:'收件国',
-        SJCS:'收件城市',
+        SJCS:'收件省',
         WEIGHT:'重量(g)',
+        Lastmile:'末公里',
+        ServiceName:'服务',
+        ChangeTheFile:'重新选择文件',
         NDYF:'您的运费',
         SPYF:'搜派运费',
         NDYFZE:'您的运费总额',
@@ -79,8 +90,8 @@ export default {
         freightCalculator: '运费计算器'
     },
     homeBanner: {
-        jumbotronTitle: '未公里物流超市, 快速打通到門渠道',
-        jumbotronContent: '全球一站式货运平台，让您的货品轻易运送到世界各地，轻松解决大宗货物 提供多种物流个性化运输方案 >>',
+        jumbotronTitle: '末公里物流超市, 快速打通到门渠道',
+        jumbotronContent: '东南亚一站式快递平台, 为你找出最合适的快递方案, 轻松送货到客人手中',
         originalCountry: '发货国',
         destinationCountry: '目的国',
         weight: '重量',
@@ -89,14 +100,14 @@ export default {
     },
     homeCharacteristicService:{
         serviceTitle: '专属特色服务',
-        serviceSearch : '搜索未公里公司',
+        serviceSearch : '搜索末公里公司',
         serviceSearchContent : '根据您的预期服务/包裹特征，在1分钟内找到最合适的物流供应商。 在附加的路由查找器还可以根据给定的清单推荐物流公司',
         serviceBook : '预订服务',
         serviceBookContent : '预订首选的最后一公里，立即打印标签',
         serviceTracking: '全程追踪',
         serviceTrackingContent: '与所有物流公司对接物流跟踪信息',
         serviceApi : 'API 對接',
-        serviceApiContent : '使您能够与所有未公里公司對接'
+        serviceApiContent : '使您能够与所有末公里公司對接'
     },
     homeOperation:{
         howToOperation: '如何快速操作？',
@@ -217,7 +228,7 @@ export default {
         Package_size:'包裹尺寸',
         next_step:'下一步',
         Please_price:'请填写包裹价格',
-        Please_weight:'请填写包裹重量',
+        Please_weight:'重量',
         length:'长度',
         width:'宽度',
         highly:'高度',
@@ -237,6 +248,7 @@ export default {
         choose:'选择',
         points:'分',
         day:'天',
+        jys:'或以上',
 
         Fill_address:'填写地址信息',
         Fill_order:'填写订单信息',
@@ -283,7 +295,9 @@ export default {
         selectLogisticsServices:'选择物流服务',
         orderSubmitted:'订单提交成功',
         
-        SpendTime:'运输花费时间'
+        SpendTime:'运输花费时间',
+        Product:'产品',
+        
 
 
 

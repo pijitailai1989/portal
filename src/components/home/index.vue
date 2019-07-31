@@ -6,7 +6,7 @@
         <swiper-cmp @childPost="swiperFn" />
     </section>
     <section class="section" ref='fg'>
-      <leaflet-map v-if="maps.map===0"></leaflet-map>
+      <leaflet-map v-if="maps.map==1"></leaflet-map>
       <google-map v-else/>
       
     </section>
@@ -105,7 +105,7 @@
                <p style="padding:10px 0;border-bottom:1px dashed #ECECEC;font-weight:600;color:#333;">{{news.FG}}</p>
                <div style="width:100%;height:200px;padding:10px 0;">
                    
-                   <LeafletMaps v-if="maps.map===0" @childList="childListFn1" :childProvince="provinceText" :childNameMap="nameMap"></LeafletMaps>
+                   <LeafletMaps v-if="maps.map==1" @childList="childListFn1" :childProvince="provinceText" :childNameMap="nameMap"></LeafletMaps>
                    <GoogleMaps v-else @childList="childListFn1" :childProvince="provinceText" :childNameMap="nameMap"></GoogleMaps>
                </div>
            </div>
@@ -319,12 +319,10 @@ export default {
         }
         
   },
-  created(){
-      
-  },
+  created(){},
 
   mounted() {
-    //   this.ajaxMap()
+      this.ajaxMap()
     // this.getSellerRate()
     // window.addEventListener('scroll', this.handleScroll)
     // document.documentElement.scrollTop=0
@@ -443,7 +441,7 @@ export default {
    .priceList{
        /* width:100%; */
        overflow-x: auto;
-       width: 1000px;
+       width: 80vw;
        font-weight: 600;
    }
    .priceList>ul:first-child{
@@ -479,14 +477,14 @@ export default {
        line-height: 50px;
    }
    .priceList1{
-       max-width:1020px;
+       max-width:80vw;
       max-height:400px;
       overflow-x: auto;
       overflow-y: auto;
    }
    .boxScroll{
        overflow-y: auto;
-       max-height:650px;
+       max-height:76vh;
    }
    .priceList1>ul{
        width:100%;

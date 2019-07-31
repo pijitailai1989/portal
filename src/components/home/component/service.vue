@@ -5,20 +5,21 @@
     </div>
     <div class="flexs columns box">
        
-       <ul class="flexs">
+       <ul class="flexs j-between">
          <li v-for="(item,index) in serviceArray" :key="index" @click="activeFn(index)" class="flexs columns a-center" :class="{active:item.active}">
              <i class="iconfont" :class="item.icon" :style="{color: item.color,fontSize: item.size+'px'}"/>
              <p>{{news[item.name]}}</p>
          </li>
        </ul>
        <div class="text flexs j-center">
-           <p>{{news[msg]}}</p>
+           <p>{{news[msg+'1']}}</p>
        </div>
        <div>
          <template>
            <el-carousel @change="carouselFn" ref="carousel" :initial-index="clickIndex" :interval="5000" arrow="always">
              <el-carousel-item v-for="(item,index) in serviceArray" :key="index">
-               <i><img :src="item.imgUrl" alt=""></i>
+               <i v-if="i18=='zh'"><img :src="item.imgUrl" alt=""></i>
+               <i v-else><img :src="item.imgUrlen" alt=""></i>
              </el-carousel-item>
            </el-carousel>
          </template>
@@ -27,7 +28,7 @@
           <div class="flexs a-center">
               <h3>{{news.TR}}</h3>
               <b></b>
-              <span>{{news.IM}}</span>
+              <span @click="sendData()" style="cursor:pointer;">{{news.IM}}</span>
           </div>
           <div class="flexs">
               <p>{{news.AL}}</p>
@@ -37,7 +38,7 @@
     <div class="box1 flexs j-center">
        <div class="flexs rows ">
            <div v-for="(item,index) in serviceArr" :key="index" class="flexs columns a-center">
-               <img :src="item.imgUrl" alt="">
+               <img :src="i18=='zh'?item.imgUrl:item.imgUrlen" alt="">
                <p>{{characteristicService[item.name]}}</p>
                <!-- <span>{{characteristicService[item.msg]}}</span> -->
            </div>
@@ -57,7 +58,7 @@
       return {
            serviceArr:[
              {name:'serviceSearch',   msg:'serviceSearchContent',   imgUrl1:require('../../../assets/img/copy1.png'),       imgUrl:require('../../../assets/img/copy.png'),       active:false},
-             {name:'serviceBook',     msg:'serviceBookContent',     imgUrl1:require('../../../assets/img/chaoshi1.png'),    imgUrl:require('../../../assets/img/chaoshi.png'),    active:false},
+            //  {name:'serviceBook',     msg:'serviceBookContent',     imgUrl1:require('../../../assets/img/chaoshi1.png'),    imgUrl:require('../../../assets/img/chaoshi.png'),    active:false},
              {name:'serviceTracking', msg:'serviceTrackingContent', imgUrl1:require('../../../assets/img/duibifenxi1.png'), imgUrl:require('../../../assets/img/duibifenxi.png'), active:false},
              {name:'serviceApi',      msg:'serviceApiContent',      imgUrl1:require('../../../assets/img/guanli1.png'),     imgUrl:require('../../../assets/img/guanli.png'),     active:false},
            ],
@@ -65,22 +66,25 @@
              {
                name:'MG',icon:'icon-wuliukuaidi',size:'80',active:false,color:'#2F9AC0',
                msg:'MG',
-               imgUrl:require('../../../assets/img/carousel.png')
+               imgUrl:require('../../../assets/img/carousel.png'),
+               imgUrlen:require('../../../assets/img/carouselen.png')
              },
-             {
-               name:'YD',icon:'icon-naozhong1',size:'80',active:false,color:'#F4B33D',
-               msg:'ACS',
-               imgUrl:require('../../../assets/img/carousel.png')
-             },
+            //  {
+            //    name:'YD',icon:'icon-naozhong1',size:'80',active:false,color:'#F4B33D',
+            //    msg:'ACS',
+            //    imgUrl:require('../../../assets/img/carousel.png')
+            //  },
              {
                name:'QC',icon:'icon-shujuquxianzoushiqushifazhantubiaoshangsheng',size:'80',active:false,color:'#5AC6C9',
                msg:'QC',
-               imgUrl:require('../../../assets/img/carousel.png')
+               imgUrl:require('../../../assets/img/carousel.png'),
+               imgUrlen:require('../../../assets/img/carouselen.png')
              },
              {
                name:'API',icon:'icon-ziyuanduijie-',size:'80',active:false,color:'#E78483',
                msg:'API',
-               imgUrl:require('../../../assets/img/carousel.png')
+               imgUrl:require('../../../assets/img/carousel.png'),
+               imgUrlen:require('../../../assets/img/carouselen.png')
              }
            ],
            clickIndex:0,
@@ -94,6 +98,9 @@
       news(){
        return this.$t('news')
       },
+      i18(){
+        return this.$i18n.locale;
+      }
     },
 
     components: {},
@@ -105,6 +112,12 @@
     },
 
     methods: {
+      sendData() {
+      this.$router.push({
+          path: 'menu/logisticsService',
+          name: 'logisticsService'
+      })
+    },
       clearFn(){
         this.serviceArr.forEach(el=>{
           el.active=false;

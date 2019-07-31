@@ -5,7 +5,7 @@
          :center="center"
          :zoom="defaultZoom"
          style="width: 100%; height: 100%">
-          <gmap-info-window :options="infoOptions" :position="infoWindowPos" :opened="infoWinOpen" @closeclick="infoWinOpen=false">
+          <!-- <gmap-info-window :options="infoOptions" :position="infoWindowPos" :opened="infoWinOpen" @closeclick="infoWinOpen=false">
                <div class="country_info" style="font-size:14px;font-weight:600;">
                    <span>{{infoText.country_name}} </span>
                    <span> <span style="color:#2F9AC0;">{{infoText.lastmile_count}}</span>{{news.GFWS}}</span>
@@ -25,11 +25,27 @@
             @mouseout="closeInfoWindow()"
           >
             
-          </gmap-marker>
+          </gmap-marker> -->
           <div slot="visible" class="positionRight flexs a-center">
                  <span style="color:white;font-size:18px;padding:0 20px;" class="hiddenT">{{news.PSQY}}</span>
           </div>
           <gmap-polygon
+             :key="poly.id + index"
+             v-for="(poly, index) in pathArr"
+             :paths="poly.paths"
+             v-if="poly.next_level"
+             :editable="false" 
+             :options="{geodesic:true, strokeOpacity: 0.4, strokeColor:'#F4B33D', strokeWeight:0, fillColor:'#F4B33D', fillOpacity:0.4}"
+          ></gmap-polygon>
+          <gmap-polygon
+             :key="poly.id + index"
+             v-for="(poly, index) in pathArr"
+             :paths="poly.paths"
+             v-if="poly.next_level==false"
+             :editable="false" 
+             :options="{geodesic:true, strokeOpacity: 0.4, strokeColor:'#F4B33D', strokeWeight:0, fillColor:'#F4B33D', fillOpacity:0.4}"
+          ></gmap-polygon>
+          <!-- <gmap-polygon
              :key="poly.id + index"
              v-for="(poly, index) in pathArr"
              :paths="poly.paths"
@@ -46,7 +62,7 @@
              :editable="false" 
              :options="{geodesic:true, strokeOpacity: 0.4, strokeColor:'#F4B33D', strokeWeight:0, fillColor:'#F4B33D', fillOpacity:0.4}"
              @click="showLastmileByRegion(poly.id,poly.name, poly.next_level,poly)"
-          ></gmap-polygon>
+          ></gmap-polygon> -->
        </gmap-map>
   </div>
 </template>
@@ -304,7 +320,7 @@
 
     computed: {
       ...mapState('menu',[
-            'country_list','overview','lastmileList','regionLocation','backGo'
+            'country_list','overview','lastmileList','regionLocation1','backGo'
         ]),
         news(){
        return this.$t('news')
@@ -320,8 +336,6 @@
     mounted() {
       this.ajaxOverviewCountry()
       this.ajaxCountrylist()
-      
-      // console.log(this.markers,'this.markers')
       this.getLastmileList( [] )
       if(this.$route.query.country){
         const _this=this;
@@ -331,15 +345,12 @@
         // this.ajaxRegionLocation( _this.$route.query.code )
         // console.log(this.$route,'router')
       }
-      this.$emit('childList',this.markers)
-
-      // console.log(this.markers,'this.markers')
       
     },
 
     methods: {
       ...mapMutations('menu',[
-          'getLastmileList','getRegionLocation','setback'
+          'getLastmileList','getRegionLocation1','setback'
       ]),
       ...mapActions('menu',[
           'ajaxOverviewCountry','ajaxLastmileList','ajaxRegionLocation','ajaxLastmileListRegion','ajaxCountrylist'
@@ -377,11 +388,11 @@
                    lng:data.cnt_lng
                  }
         this.defaultZoom=data.zoom
-        this.getLastmileList( [] )
-        this.getRegionLocation( [] )
+        // this.getLastmileList( [] )
+        this.getRegionLocation1( [] )
         let obj={}
         obj['country']=data.country
-        this.ajaxLastmileList( this.$qs.stringify(obj) )
+        // this.ajaxLastmileList( this.$qs.stringify(obj) )
         // this.ajaxRegionLocation( data.location_code )
         this.country=data.country
         this.location_code=data.location_code
@@ -430,8 +441,8 @@
            _this.showCountry(newval);
         }
       },
-      regionLocation(newval,oldval){
-         this.pathArr=this.regionLocation
+      regionLocation1(newval,oldval){
+         this.pathArr=this.regionLocation1
         //  console.log(newval,'newval1111111111111')
       },
       backGo(newval,oldval){

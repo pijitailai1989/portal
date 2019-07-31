@@ -1,22 +1,30 @@
 export default {
     news:{
+        btn:'Back',
+        CFD:'From',
+        nodata:'No Data',
+        LOADING:'Loading...',
         PE:'Please enter your email account',
-        PS:'Subscribe to search mail and keep track of search news anytime and anywhere',
-        LJ:'Subscribe now',
+        PS:'Get Spider update from time to time',
+        LJ:'Subscribe newsletter',
         YG:'For more information, please contact our sales team',
-        TR:'Try our freight calculator',
-        AL:'A large number of goods, access to lower enterprise freight',
+        TR:'Try our calculator',
+        AL:'Get the accuracy courier cost per parcel',
         IM:'Immediately',
         PL:'Platform services',
-        MG:'Search the last mile company',
+        MG:'Search courier company',
         YD:'reservation service',
-        QC:'rhole-process tracking',
-        API:'API docking',
+        QC:'Full track and trace',
+        API:'Open API Integration',
+        MG1:'Search the best fit courier company based your requirement',
+        YD1:'reservation service',
+        QC1:'Full track and trace',
+        API1:'Integrate Spider with your system via Open API',
         ACS:'According to your expected service/package characteristics, find the most suitable logistics supplier within 1 minute.Additional routing finders can also recommend logistics companies based on a given list',
         FG:'Coverage area',
-        FW:'Provider',
+        FW:'Provider(s)',
         BK:'Blog',
-        YF:'Freight Comparison',
+        YF:'Calculator',
         HZ:'Partner',
         JJD:'Send To',
         SD:'Capital',
@@ -36,24 +44,27 @@ export default {
         ZZC:'Only support',
         KSDB:'Start Compare',
         XXPB:'Information match failed, please upload again',
-        DCYFDB:'Export freight comparison results',
-        YFDBJG:'Freight comparison results',
+        DCYFDB:'Export Cost comparison',
+        YFDBJG:'Cost comparison',
         SHG:'Dest. Country',
-        SJCS:'Dest. City',
+        SJCS:'Dest. Province',
         WEIGHT:'Weight(g)',
+        Lastmile:'Lastmile',
+        ServiceName:'Service Name',
+        ChangeTheFile:'Change The File',
         NDYF:'Your Freight Cost',
         SPYF:'Spider Freight Cost',
         NDYFZE:'Your Total Freight Cost',
         SPDYFZE:'Spider Total Freight Cost',
         TSJJSQ:'Tip: only the first 1000 rows of the comparison are calculated',
-        GFWS:'Service provider',
+        GFWS:'Service provider(s)',
         ZDJ:'Starting price',
         JJDL:'Delivery From',
         JGXQ:'Rate Card',
         DCEXCEL:'Export excel',
         JGL:'Price',
         ZLL:'Weight',
-        YSTS:'Spend time'
+        YSTS:'Lead Time'
     },
     nav:{
         logoName: 'Spider Parcel',
@@ -77,13 +88,13 @@ export default {
         freightCalculator: 'Freight Calculator'
     },
     homeBanner: {
-        jumbotronTitle: 'One click to decide your B2C logistics solution',
-        jumbotronContent: 'Global B2C logistics platform, transport your parcel to anywhere of the world. Provide a variety of personalized logistics transport plan',
+        jumbotronTitle: 'One click to book your preferred courier',
+        jumbotronContent: 'Your Global Courier Portal',
         originalCountry: 'Origin Country',
         destinationCountry: 'Dest. Country',
         weight: 'Weight',
-        freightEstimate: 'Freight Estimation',
-        freightEstimateTemplate: 'Freight estimation sample'
+        freightEstimate: 'Quota',
+        freightEstimateTemplate: 'Sample Quota'
     },
     homeCharacteristicService:{
         serviceTitle: 'Our Service',
@@ -126,7 +137,7 @@ export default {
         copyRight: 'Copy right'
     },
     homeUseSpider:{
-        useSpider: 'Start with Spider Parcle now!',
+        useSpider: 'Start with Spider Parcel now!',
         useSpiderInfor: 'No matter where you are, if you want to send your parcel, Spider can help you.',
         freeRegister: 'Free registration'
     },
@@ -216,8 +227,8 @@ export default {
         Sensitive_items:'Sensitive Items',
         Package_size:'Package Size',
         next_step:'Next Step',
-        Please_price:'Please_price',
-        Please_weight:'Please_weight',
+        Please_price:'Please Price',
+        Please_weight:'Weight',
         length:'Length',
         width:'Width',
         highly:'Height',
@@ -237,6 +248,7 @@ export default {
         choose:'Choose',
         points:'Points',
         day:'Days',
+        jys:' or more',
 
         Fill_address:'Fill Address',
         Fill_order:'Fill Order',
@@ -282,7 +294,9 @@ export default {
         selectLogisticsServices:'selectLogisticsServices',
         orderSubmitted:'orderSubmitted',
 
-        SpendTime:'SpendTime'
+        SpendTime:'SpendTime',
+        Product:'Product',
+        
     }
     
 }

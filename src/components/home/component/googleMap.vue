@@ -4,7 +4,19 @@
       <p>{{news.FG}}</p>
     </div>
     <gmap-map :options="{styles: styles, disableDefaultUI: true}" :center="center" :zoom="defaultZoom" style="width:100%;height:500px;">
-      <gmap-marker :key="index" v-for="(m, index) in markers" :position="m.position" :icon="m.icon" :clickable="true" :animation="2"  @click="backTo('/mapDetail',m.content.country,m.content.location_code)"></gmap-marker>
+      <gmap-info-window :options="infoOptions" :position="infoWindowPos" :opened="infoWinOpen" @closeclick="infoWinOpen=false">
+               <div class="country_info" style="font-size:14px;font-weight:600;">
+                   <span>{{infoText.country_name}}&nbsp;&nbsp;&nbsp;</span>
+                   <span> <span style="color:#2F9AC0;">{{infoText.lastmile_count}}&nbsp;</span>{{news.GFWS}}&nbsp;&nbsp;&nbsp;</span>
+                   <span>{{news.ZDJ}}:<span style="color:#2F9AC0;">&nbsp;{{infoText.currency}}&nbsp;{{infoText.starting_price}}</span></span>
+               </div>
+      </gmap-info-window>
+      <gmap-marker :key="index" v-for="(m, index) in markers" :position="m.position" :icon="m.icon" :clickable="true" :animation="2"
+        @click="backTo('/mapDetail',m.content.country,m.content.location_code)"
+        @mouseover="toggleInfoWindow(m.content)"
+            @mouseout="closeInfoWindow()">
+      
+      </gmap-marker>
     </gmap-map>
     <div class="flexs j-center" style="padding:15px 0;">
       <p class="buttons" @click="backTo('/mapDetail')">{{news.CKGD}}</p>
@@ -21,6 +33,14 @@ import {mapState,mapGetters,mapActions,mapMutations} from 'vuex'
       return {
          center: {lat: 8, lng : 110},
          defaultZoom:4,
+         infoOptions: {
+            pixelOffset: {
+              width: -5,
+              height: -18
+            }
+         },
+         infoWinOpen:false,
+         infoWindowPos:null,
          markers: [],
          styles:   [
                         {
@@ -263,7 +283,33 @@ import {mapState,mapGetters,mapActions,mapMutations} from 'vuex'
         ]),
       backTo(url,country_name,country){
         this.$router.push({path: url, query: {country: country_name,code:country}})
-      }
+      },
+      toggleInfoWindow(data){
+        const _this=this;
+        if(_this.overview){
+           for(let key in _this.overview){
+             if(data.country==key){
+                _this.infoWindowPos={
+                   lat:data.lat,
+                   lng:data.lng
+                 }
+                _this.infoWinOpen=true;
+                _this.infoText=_this.overview[key]
+             }
+           }
+        }
+          // console.log(this.infoText,'infoText')
+      },
+      closeInfoWindow(){
+         this.infoWinOpen=false;
+         this.infoText={
+           country_name:'',
+           currency:'',
+           lastmile_count:null,
+           starting_price:null
+         }
+         this.infoWindowPos=null
+      },
     },
 
     watch: {

@@ -33,6 +33,22 @@
              :key="poly.id + index"
              v-for="(poly, index) in pathArr"
              :paths="poly.paths"
+             :editable="false" 
+             :options="{geodesic:true, strokeOpacity: strokeOpacity, strokeColor:'#F4B33D', strokeWeight:0, fillColor:'#F4B33D', fillOpacity:strokeOpacity}"
+             @click="showLastmileByRegion(poly.id,poly.name, poly.next_level,poly)"
+          ></gmap-polygon>
+          <gmap-polygon
+             :key="poly.id + index+index"
+             v-for="(poly, index) in pathArr1"
+             :paths="poly.paths"
+             :editable="false" 
+             :options="{geodesic:true, strokeOpacity: 0.4, strokeColor:'#F4B33D', strokeWeight:0, fillColor:'#F4B33D', fillOpacity:0.4}"
+             @click="showLastmileByRegion(poly.id,poly.name, poly.next_level,poly)"
+          ></gmap-polygon>
+          <!-- <gmap-polygon
+             :key="poly.id + index"
+             v-for="(poly, index) in pathArr"
+             :paths="poly.paths"
              v-if="poly.next_level"
              :editable="false" 
              :options="{geodesic:true, strokeOpacity: 0.4, strokeColor:'#F4B33D', strokeWeight:0, fillColor:'#F4B33D', fillOpacity:0.4}"
@@ -46,7 +62,7 @@
              :editable="false" 
              :options="{geodesic:true, strokeOpacity: 0.4, strokeColor:'#F4B33D', strokeWeight:0, fillColor:'#F4B33D', fillOpacity:0.4}"
              @click="showLastmileByRegion(poly.id,poly.name, poly.next_level,poly)"
-          ></gmap-polygon>
+          ></gmap-polygon> -->
        </gmap-map>
   </div>
 </template>
@@ -54,15 +70,19 @@
 <script>
   import {mapState,mapGetters,mapActions,mapMutations} from 'vuex'
   export default {
-    name:'googlemaps',
+    name:'googlemap',
     props:{
       childProvince: {
             type: String,
             default: ''
       },
+      childCity: {
+          type: Object,
+          default:{}
+      },
       childNameMap:{
-        tyle:Object,
-        default:{}
+          type:Object,
+          default:{}
       }
     },
     data () {
@@ -83,8 +103,9 @@
               height: -18
             }
          },
-         
+         strokeOpacity:0.4,
          pathArr:[],
+         pathArr1:[],
          country:'',
          location_code:'',
          infoWindowPos:null,
@@ -307,33 +328,33 @@
             'country_list','overview','lastmileList','regionLocation','backGo'
         ]),
         news(){
-       return this.$t('news')
-      },
+          return this.$t('news')
+        },
       // ...mapGetters('menu',[
       //                   'paths'
                         
       //   ]),
     },
 
-    beforeMount() {},
-
+    beforeMount() {
+        
+    },
+    created(){
+          
+    },
     mounted() {
+      this.getLastmileList( [] )
       this.ajaxOverviewCountry()
       this.ajaxCountrylist()
       
-      // console.log(this.markers,'this.markers')
-      this.getLastmileList( [] )
       if(this.$route.query.country){
         const _this=this;
-          let obj={}
-        obj['country']=_this.$route.query.country
-        this.ajaxLastmileList( this.$qs.stringify(obj) )
+        this.ajaxLastmileListRegion( _this.$route.query.code )
         this.ajaxRegionLocation( _this.$route.query.code )
-        // console.log(this.$route,'router')
+        this.country= this.$route.query.country
       }
       this.$emit('childList',this.markers)
-
-      console.log(this.markers,'this.markers')
+      
       
     },
 
@@ -371,7 +392,8 @@
          this.infoWindowPos=null
       },
       showCountry(data){
-        // console.log(data,'data',this.markers)
+        this.strokeOpacity=0.4;
+        this.pathArr1=[];
         this.center={
                    lat:data.cnt_lat,
                    lng:data.cnt_lng
@@ -379,17 +401,20 @@
         this.defaultZoom=data.zoom
         this.getLastmileList( [] )
         this.getRegionLocation( [] )
-        let obj={}
-        obj['country']=data.country
-        this.ajaxLastmileList( this.$qs.stringify(obj) )
+        // let obj={}
+        // obj['country']=data.country
+        // this.ajaxLastmileList( this.$qs.stringify(obj) )
+        this.ajaxLastmileListRegion(data.location_code)
         this.ajaxRegionLocation( data.location_code )
         this.country=data.country
         this.location_code=data.location_code
         this.setback(false)
-        this.$emit('childPost',this.country)
+        var date = { c:data.country,lc:data.location_code }
+        this.$emit('childPost',date)
         // console.log(this.country,'this.country')
       },
       showLastmileByRegion(id,name,level,poly){
+          this.strokeOpacity=0
           // console.log(id,name,level,poly,'location_code,has_next_level')
           if(id){
             this.ajaxLastmileListRegion(id)
@@ -397,12 +422,13 @@
           if(level){
             this.ajaxRegionLocation( id )
           }else{
-            this.pathArr=[]
-            this.pathArr.push(poly)
+            this.pathArr1=[]
+            this.pathArr1.push(poly)
           }
           this.setback(true)
-          // console.log(this.pathArr,'pathArr')
-          this.$emit('childPost',this.country)
+          var data = { c:id,lc:this.$route.query.code }
+          
+          this.$emit('childPost',data)
           
       }
 
@@ -410,9 +436,9 @@
 
     watch: {
       childProvince(newval,oldval){
+          
           const _this=this;
           if(newval){
-              // console.log(newval,oldval,'newval,oldval')
 
               _this.markers.forEach(el=>{
                 if(el.content['country']==newval){
@@ -424,9 +450,25 @@
 
           }
       },
+      childCity(newval,oldval){
+          const _this=this;
+          if(newval.type==0){
+              _this.markers.forEach(el=>{
+                if(el.content['location_code']==newval.c){
+                    _this.showCountry(el.content);
+                    return;
+                }
+              })
+          }else if(newval.type==1){
+              _this.regionLocation.forEach(el => {
+                if(el.id==newval.c){
+                  this.showLastmileByRegion(el.id,el.name,el.next_level,el) 
+                }
+              })
+          }
+      },
       childNameMap(newval,oldval){
         const _this=this;
-        // console.log(newval,oldval,'11')
         if(newval){
            _this.showCountry(newval);
         }
@@ -437,7 +479,7 @@
       },
       backGo(newval,oldval){
          if(!newval&&this.country&&this.location_code){
-             this.ajaxLastmileList( this.country )
+            //  this.ajaxLastmileList( this.country )
              this.ajaxRegionLocation( this.location_code )
          }
       },

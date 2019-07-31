@@ -1,12 +1,24 @@
 <template>
-  <div class="container flexs columns a-center">
-     <p>{{useSpider.useSpider}}</p>
-     <i>{{news.PS}}</i>
-     <span class="flexs columns a-center j-center">
-       <em><input type="text" v-model="customerEmall" :placeholder='news.PE'></em>
-       <a @click="subscribeFn()">{{news.LJ}}</a>
-       <span>{{news.YG}} <strong> sales@spiderparcel.com</strong></span>
-     </span>
+  <div class="flexs columns a-center" ref="record">
+    <div class="flexs columns a-center">
+      <div class="container flexs columns a-center">
+       <p>{{useSpider.useSpider}}</p>
+       <i>{{news.PS}}</i>
+       <span class="flexs columns a-center j-center">
+         <em><input type="text" v-model="customerEmall" :placeholder='news.PE'></em>
+         <a @click="subscribeFn()">{{news.LJ}}</a>
+         <span>{{news.YG}} <a href="mailto:sales@spiderparcel.com"><strong> sales@spiderparcel.com</strong></a>  </span>
+       </span>
+      </div>
+    </div>
+    <div v-show="recordShow" class="recordDiv flexs columns a-center j-around" :class="recordShow?'record':''">
+       <span @click="colseFixed" class="iconfont icon-cha" style="font-size:20px;color:white;"></span>
+       <div style="color:white;font-size:18px">{{news.PS}}</div>
+       <div style="height:50px;" class="flexs a-center">
+         <em><input type="text" v-model="customerEmall" :placeholder='news.PE'></em>
+         <a @click="subscribeFn()">{{news.LJ}}</a>
+       </div>
+    </div>
   </div>
 </template>
 
@@ -17,7 +29,8 @@ import {mapState,mapGetters,mapActions,mapMutations} from 'vuex'
     props:[''],
     data () {
       return {
-        customerEmall:''
+        customerEmall:'',
+        recordShow:false
       };
     },
 
@@ -36,13 +49,25 @@ import {mapState,mapGetters,mapActions,mapMutations} from 'vuex'
     },
 
     beforeMount() {},
-
-    mounted() {},
-
+    created(){
+      
+    },
+    mounted() {
+      this.scrollBody()
+      window.addEventListener('scroll', this.scrollBody)
+      
+      
+      
+    },
+    
     methods: {
       ...mapActions('home',[
             'ajaxNewsletter'
         ]),
+        colseFixed(){
+          this.$cookies.set('record',true);
+          this.recordShow = false ;
+        },
         async subscribeFn(){
           var reg=new RegExp(/^([a-zA-Z0-9._-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/);
           const _this = this;
@@ -64,6 +89,8 @@ import {mapState,mapGetters,mapActions,mapMutations} from 'vuex'
                         message: res.message,
                         type: 'success'
                       });
+                    _this.$cookies.set('record',true);
+                    _this.recordShow = false ;
                      break;
                    case 500001:
                      _this.$message.error( res.message );
@@ -86,55 +113,114 @@ import {mapState,mapGetters,mapActions,mapMutations} from 'vuex'
         //      var reg=new RegExp(/^([a-zA-Z0-9._-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/);
              
         //      return reg.test(str);
-        // }
-    },
+        // },
+        scrollBody(){
+          let cookies = this.$cookies.get('record');
+          let offsetTop = this.$refs.record.offsetTop
+          let scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
 
+          if( !cookies && scrollTop <= offsetTop-700 ){
+             this.recordShow = true ;
+          }else{
+             this.recordShow = false ;
+          }
+          
+        }
+    },
+    destroyed () {
+     window.removeEventListener('scroll', this.scrollBody)
+     },
     watch: {}
 
-  }
+    }
 
 </script>
 <style lang='' scoped>
+   .record{
+     position:fixed;
+     left:0;
+     bottom:0;
+     z-index:10000;
+     width:100%;
+   }
+   .recordDiv{
+     width:100%;
+     height:140px;
+     background:rgba(0,0,0,.4);
+     color:white;
+   }
+   .recordDiv>span{
+     position:absolute;
+     right:5px;
+     top:2px;
+   }
+   .recordDiv em{
+     padding:10px 30px;
+     background:#F6F6F6;
+     border-radius: 50px;
+     margin-right:50px;
+   }
+   .recordDiv em>input{
+     width:250px;
+     height:30px;
+     border:none;
+     font-size:18px;
+     color:#AAAAAA;
+     outline:none;
+     background: #F6F6F6;
+   }
+   .recordDiv a{
+     font-size:16px;
+       color:white;
+       font-weight: 500;
+       width:180px;
+       height:40px;
+       background:rgba(47,154,192,1) linear-gradient(138deg,rgba(47,183,192,1) 0%,rgba(47,154,192,1) 100%);
+       border-radius:35px;
+       text-align:center;
+       line-height: 40px;
+       cursor:pointer;
+   }
    .container{
        padding:144px 0 0;
    }
-   p{
+   .container p{
        font-size: 40px;
        color:#333;
        font-weight: 600;
    }
-   em{
+   .container em{
      padding:20px 200px;
      background:#F6F6F6;
      border-radius: 50px;
      margin-bottom:60px;
    }
-   em>input{
+   .container em>input{
      width:300px;
      height:60px;
      border:none;
-     font-size:30px;
+     font-size:18px;
      color:#AAAAAA;
      outline:none;
      background: #F6F6F6;
    }
-   b{
+   .container b{
      font-size:18px;
      color:#666;
    }
-   strong{
+   .container strong{
      font-size:20px;
      color:#2F9AC0;
    }
-   span>span{
+   .container span>span{
      margin-bottom:20px;
    }
-   i{
+   .container i{
        font-size:24px;
        color:#aaa;
        padding:58px 20px 93px;
    }
-   span>a{
+   .container span.flexs>a{
        font-size:22px;
        color:white;
        font-weight: 500;
@@ -154,19 +240,26 @@ import {mapState,mapGetters,mapActions,mapMutations} from 'vuex'
      }
    }
    @media screen and (max-width: 768px) {
+     .record{
+       position: relative;
+     }
+     .recordDiv{
+       display:none !important;
+     }
      .container{
+       display: flex !important;
        padding:.4rem 0;
      }
-     p{
+     .container p{
        padding:0 5%;
        font-size: .34rem;
      }
-     i{
+     .container i{
        font-size:.24rem;
        padding:.4rem .8rem;
      }
      
-     span>a{
+     .container span.flexs>a{
        font-size:.36rem;
        color:white;
        font-weight: 500;
@@ -177,23 +270,23 @@ import {mapState,mapGetters,mapActions,mapMutations} from 'vuex'
        text-align:center;
        line-height: 40px;
    }
-     em{
+     .container em{
      padding:10px 40px;
      background:#F6F6F6;
      border-radius: 50px;
      margin-bottom:20px;
    }
-   em>input{
+   .container em>input{
      width:200px;
      height:20px;
      font-size:20px;
      
    }
-   span>span{
+   .container span>span{
      margin-bottom:20px;
      font-size:.1rem;
    }
-   strong{
+   .container strong{
      font-size:.1rem;
      color:#2F9AC0;
    }

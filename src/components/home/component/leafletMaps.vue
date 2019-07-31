@@ -4,7 +4,7 @@
                  <span style="color:white;font-size:18px;padding:0 20px;" class="hiddenT">{{news.PSQY}}</span>
     </div>
     <l-map style="width: 100%; height: 100%;" :zoom="defaultZoom" :center="centerData" :attributionControl="attributionControl" @update:center="centerUpdated">
-      <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
+      <!-- <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
       <l-marker :key="index" v-for="(m, index) in markers" :lat-lng="m.lat_lng" @click="showCountry(m.content)"  :draggable="draggable"
             @mouseover="toggleInfoWindow(m.content)"
             @mouseout="closeInfoWindow()">
@@ -15,7 +15,7 @@
 
           >
         </l-icon>
-      </l-marker>
+      </l-marker> -->
       <l-polygon
       :key="poly.id + index"
       v-for="(poly, index) in pathArr"
@@ -25,8 +25,18 @@
       :opactiy="opactiy"
       :fillColor="color"
       :fillOpacity="opactiy"
-      @click="showLastmileByRegion(poly.id,poly.name, poly.next_level,poly)"
       >
+      <!-- <l-polygon
+      :key="poly.id + index"
+      v-for="(poly, index) in pathArr"
+      :lat-lngs="poly.paths"
+      :color="color"
+      :weight="weight"
+      :opactiy="opactiy"
+      :fillColor="color"
+      :fillOpacity="opactiy"
+      @click="showLastmileByRegion(poly.id,poly.name, poly.next_level,poly)"
+      > -->
       </l-polygon>
     </l-map> 
     
@@ -95,7 +105,7 @@ export default {
   },
     computed: {
       ...mapState('menu',[
-            'country_list','overview','lastmileList','regionLocation','backGo'
+            'country_list','overview','lastmileList','regionLocation1','backGo'
         ]),
         news(){
        return this.$t('news')
@@ -125,7 +135,7 @@ export default {
 
     methods: {
       ...mapMutations('menu',[
-          'getLastmileList','getRegionLocation','setback'
+          'getLastmileList','getRegionLocation1','setback'
       ]),
       ...mapActions('menu',[
           'ajaxOverviewCountry','ajaxLastmileList','ajaxRegionLocation','ajaxLastmileListRegion','ajaxCountrylist'
@@ -165,7 +175,7 @@ export default {
         const _this =this;
         // this.defaultZoom = data.zoom > 7 ? 10 : data.zoom;
         this.getLastmileList( [] )
-        this.getRegionLocation( [] )
+        this.getRegionLocation1( [] )
         let obj={}
         obj['country']=data.country
         // this.ajaxLastmileList( this.$qs.stringify(obj) )
@@ -183,7 +193,7 @@ export default {
         setTimeout(() => {
            this.defaultZoom = data.zoom;
         }, 500);
-        console.log(this.centerData,'this.center showCountry')
+        // console.log(this.centerData,'this.center showCountry')
       },
       showLastmileByRegion(id,name,level,poly){
           // console.log(id,name,level,poly,'location_code,has_next_level')
@@ -227,8 +237,8 @@ export default {
            _this.showCountry(newval);
         }
       },
-      regionLocation(newval,oldval){
-         this.pathArr=this.regionLocation
+      regionLocation1(newval,oldval){
+         this.pathArr=this.regionLocation1
         //  console.log(newval,'newval1111111111111')
       },
       backGo(newval,oldval){

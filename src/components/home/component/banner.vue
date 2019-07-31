@@ -5,8 +5,8 @@
       <div class="container">
         <div class="row">
           <div class="col-md-6 col-lg-7">
-            <h1 class="big-size-title">{{banner.jumbotronTitle}}</h1>
-            <div class="small-size-title">{{banner.jumbotronContent}}</div>
+            <h2 class="big-size-title" style="text-align:center">{{banner.jumbotronTitle}}</h2>
+            <div class="small-size-title" style="text-align:center">{{banner.jumbotronContent}}</div>
           </div>
           <div class="col-md-5 col-lg-4 col-md-offset-1 col-lg-offset-1 bigshow">
             <form class="calculate-fee">
@@ -31,7 +31,7 @@
                     v-for="(item,index) in destinationList"
                     :key="index"
                     :label="item.name"
-                    :value="item.code"
+                    :value="item.country_code"
                     @click.native="destinationListSelected(item,index)">
                     <!-- <span style="float: left">{{ item.label }}</span>
                     <span style="float: right; font-size: 13px">{{ item.value }}</span> -->
@@ -193,11 +193,11 @@ export default {
   methods: {
   	getDestinationCoutry(arg) {
 	    this.$http.get('/home/last-mile/country').then(res => {
-	    	if(res.status === 200){
-			    this.destinationList = res.data
-			    if(arg === 'default' && this.isDefault2){
+            if (res.status === 200) {
+                this.destinationList = res.data
+			    if (arg === 'default' && this.isDefault2){
 				    this.fromData.destination = Object.values(res.data)[0].name
-				    this.dstTem = res.data[0].code
+				    this.dstTem = res.data[0].country_code
 				    this.disSel = res.data[0]
                 }
             }
@@ -241,11 +241,11 @@ export default {
     //   console.log(this.oriSel, '1111')
     // },
     destinationListSelected(val,key) {
-  		console.log(val,'value的值')
+  		// console.log(val,'value的值')
       this.isDefault2 = false
       this.disSel = {}
       this.disSel = val
-      this.dstTem = val.code
+      this.dstTem = val.country_code
     },
 
 
@@ -255,7 +255,7 @@ export default {
         destinationInit: this.disSel,
         weightInit: this.weightVal
       }
-      console.log(dataObj, '传递数据')
+      // console.log(dataObj, '传递数据')
 
       this.$router.push({
           path: 'menu/logisticsService',
@@ -333,7 +333,7 @@ export default {
           margin-top: 68px;
       }
       .big-size-title{
-        font-size:40px;
+        font-size:32px;
         font-weight:500;
         color:rgba(255,255,255,1);
       }

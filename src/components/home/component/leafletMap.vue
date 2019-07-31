@@ -5,13 +5,24 @@
     </div>
     <l-map style="width: 100%; height: 500px;" :zoom="zoom" :center="center">
       <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
-      <l-marker :key="index" v-for="(m, index) in markers" :lat-lng="m.lat_lng"  @click="backTo('/mapDetail',m.content.country,m.content.location_code)">
+      <l-marker :key="index" v-for="(m, index) in markers" :lat-lng="m.lat_lng"  @click="backTo('/mapDetail',m.content.country,m.content.location_code)"
+       :draggable="draggable"
+            @mouseover="toggleInfoWindow(m.content)"
+            @mouseout="closeInfoWindow()"
+            >
         <!-- <l-icon
           :icon-url="m.icon.iconUrl"
           :icon-size="m.icon.iconSize"
           :icon-anchor="m.icon.iconAnchor"
           >
         </l-icon> -->
+        <l-tooltip>
+          <div class="country_info" style="font-size:14px;font-weight:600;">
+                   <span>{{infoText.country_name}}&nbsp;&nbsp;&nbsp;</span>
+                   <span> <span style="color:#2F9AC0;">{{infoText.lastmile_count}}&nbsp;</span>{{news.GFWS}}&nbsp;&nbsp;&nbsp;</span>
+                   <span>{{news.ZDJ}}:<span style="color:#2F9AC0;">&nbsp;{{infoText.currency}}&nbsp;{{infoText.starting_price}}</span></span>
+               </div>
+        </l-tooltip>
       </l-marker>
       
     </l-map> 
@@ -22,7 +33,7 @@
 </template>
 
 <script>
-import { LMap, LTileLayer, LMarker, LPopup ,LPolygon , LIcon} from 'vue2-leaflet';
+import { LMap, LTileLayer, LMarker, LPopup ,LPolygon , LIcon,LTooltip} from 'vue2-leaflet';
 import {mapState,mapGetters,mapActions,mapMutations} from 'vuex'
 export default {
   name: 'leafletmap',
@@ -32,7 +43,8 @@ export default {
     LMarker,
     LPopup,
     LPolygon,
-    LIcon
+    LIcon,
+    LTooltip
   },
   data () {
     return {
@@ -42,9 +54,15 @@ export default {
       attribution: '',
       marker: L.latLng(8, 110),
       text: 'this is a marker',
-
-
+      infoText:{
+        country_name:'',
+        currency:'',
+        lastmile_count:null,
+        starting_price:null
+      },
+      draggable: false,
       markers: [],
+      infoWinOpen:false
     }
   },
     computed: {
@@ -75,7 +93,33 @@ export default {
         ]),
       backTo(url,country_name,country){
         this.$router.push({path: url, query: {country: country_name,code:country}})
-      }
+      },
+      toggleInfoWindow(data){
+        const _this=this;
+        if(_this.overview){
+           for(let key in _this.overview){
+             if(data.country==key){
+                _this.infoWindowPos={
+                   lat:data.lat,
+                   lng:data.lng
+                }
+                _this.infoWinOpen=true;
+                _this.infoText=_this.overview[key]
+             }
+           }
+        }
+          // console.log(this.infoText,'infoText')
+      },
+      closeInfoWindow(){
+         this.infoWinOpen=false;
+         this.infoText={
+           country_name:'',
+           currency:'',
+           lastmile_count:null,
+           starting_price:null
+         }
+         this.infoWindowPos=null
+      },
     },
 
     watch: {

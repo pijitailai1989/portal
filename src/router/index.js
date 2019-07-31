@@ -17,6 +17,10 @@ export default new Router({
       component: mapDetail => require(['@/components/menu/mapDetail'], mapDetail)   //地图详情
     },
     {
+      path: '/mapDetailUrl',
+      component: mapDetailUrl => require(['@/components/menu/mapDetailUrl'], mapDetailUrl)   //地图详情
+    },
+    {
       path: '/menu',
       component: menu => require(['@/components/menu/index'], menu),   //菜单
       children: [

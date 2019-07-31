@@ -5,7 +5,7 @@
          :center="center"
          :zoom="defaultZoom"
          style="width: 100%; height: 100%">
-          <gmap-info-window :options="infoOptions" :position="infoWindowPos" :opened="infoWinOpen" @closeclick="infoWinOpen=false">
+          <!-- <gmap-info-window :options="infoOptions" :position="infoWindowPos" :opened="infoWinOpen" @closeclick="infoWinOpen=false">
                <div class="country_info" style="font-size:14px;font-weight:600;">
                    <span>{{infoText.country_name}} </span>
                    <span> <span style="color:#2F9AC0;">{{infoText.lastmile_count}}</span>{{news.GFWS}}</span>
@@ -25,11 +25,11 @@
             @mouseout="closeInfoWindow()"
           >
             
-          </gmap-marker>
+          </gmap-marker> -->
           <div slot="visible" class="positionRight flexs a-center">
                  <span style="color:white;font-size:18px;padding:0 20px;" class="hiddenT">{{news.PSQY}}</span>
           </div>
-          <gmap-polygon
+          <!-- <gmap-polygon
              :key="poly.id + index"
              v-for="(poly, index) in pathArr"
              :paths="poly.paths"
@@ -46,7 +46,22 @@
              :editable="false" 
              :options="{geodesic:true, strokeOpacity: 0.4, strokeColor:'#F4B33D', strokeWeight:0, fillColor:'#F4B33D', fillOpacity:0.4}"
              @click="showLastmileByRegion(poly.id,poly.name, poly.next_level,poly)"
+          ></gmap-polygon> -->
+          <gmap-polygon
+             :key="poly.id + index"
+             v-for="(poly, index) in pathArr"
+             :paths="poly.paths"
+             :editable="false" 
+             :options="{geodesic:true, strokeOpacity: 0.4, strokeColor:'#F4B33D', strokeWeight:0, fillColor:'#F4B33D', fillOpacity:0.4}"
           ></gmap-polygon>
+          <!-- <gmap-polygon
+             :key="poly.id + index"
+             v-for="(poly, index) in pathArr"
+             :paths="poly.paths"
+             v-if="poly.next_level==false"
+             :editable="false" 
+             :options="{geodesic:true, strokeOpacity: 0.4, strokeColor:'#F4B33D', strokeWeight:0, fillColor:'#F4B33D', fillOpacity:0.4}"
+          ></gmap-polygon> -->
        </gmap-map>
   </div>
 </template>
@@ -304,15 +319,11 @@
 
     computed: {
       ...mapState('menu',[
-            'country_list','overview','lastmileList','regionLocation','backGo'
+            'country_list','overview','lastmileList','regionLocation1','backGo'
         ]),
         news(){
        return this.$t('news')
       },
-      // ...mapGetters('menu',[
-      //                   'paths'
-                        
-      //   ]),
     },
 
     beforeMount() {},
@@ -320,9 +331,7 @@
     mounted() {
       this.ajaxOverviewCountry()
       this.ajaxCountrylist()
-      
-      // console.log(this.markers,'this.markers')
-      this.getLastmileList( [] )
+      // this.getLastmileList( [] )
       if(this.$route.query.country){
         const _this=this;
           let obj={}
@@ -331,15 +340,13 @@
         // this.ajaxRegionLocation( _this.$route.query.code )
         // console.log(this.$route,'router')
       }
-      this.$emit('childList',this.markers)
-
-      console.log(this.markers,'this.markers')
+      // this.$emit('childList',this.markers)
       
     },
 
     methods: {
       ...mapMutations('menu',[
-          'getLastmileList','getRegionLocation','setback'
+          'getLastmileList','getRegionLocation1','setback'
       ]),
       ...mapActions('menu',[
           'ajaxOverviewCountry','ajaxLastmileList','ajaxRegionLocation','ajaxLastmileListRegion','ajaxCountrylist'
@@ -358,7 +365,6 @@
              }
            }
         }
-          // console.log(this.infoText,'infoText')
       },
       closeInfoWindow(){
          this.infoWinOpen=false;
@@ -371,14 +377,13 @@
          this.infoWindowPos=null
       },
       showCountry(data){
-        // console.log(data,'data',this.markers)
         this.center={
                    lat:data.cnt_lat,
                    lng:data.cnt_lng
                  }
         this.defaultZoom=data.zoom
-        this.getLastmileList( [] )
-        this.getRegionLocation( [] )
+        // this.getLastmileList( [] )
+        this.getRegionLocation1( [] )
         let obj={}
         obj['country']=data.country
         // this.ajaxLastmileList( this.$qs.stringify(obj) )
@@ -387,7 +392,6 @@
         this.location_code=data.location_code
         this.setback(false)
         this.$emit('childPost',this.country)
-        // console.log(this.country,'this.country')
       },
       showLastmileByRegion(id,name,level,poly){
           // console.log(id,name,level,poly,'location_code,has_next_level')
@@ -401,7 +405,6 @@
             this.pathArr.push(poly)
           }
           this.setback(true)
-          // console.log(this.pathArr,'pathArr')
           this.$emit('childPost',this.country)
           
       }
@@ -412,7 +415,6 @@
       childProvince(newval,oldval){
           const _this=this;
           if(newval){
-              // console.log(newval,oldval,'newval,oldval')
 
               _this.markers.forEach(el=>{
                 if(el.content['country']==newval){
@@ -431,14 +433,11 @@
            _this.showCountry(newval);
         }
       },
-      regionLocation(newval,oldval){
-         this.pathArr=this.regionLocation
-        //  console.log(newval,'newval1111111111111')
+      regionLocation1(newval,oldval){
+         this.pathArr=this.regionLocation1
       },
       backGo(newval,oldval){
          if(!newval&&this.country&&this.location_code){
-            //  this.ajaxLastmileList( this.country )
-            //  this.ajaxRegionLocation( this.location_code )
          }
       },
       country_list:{
@@ -447,7 +446,6 @@
              this.country_list.forEach( (el,index) => {
                
                let data={}
-                //  data.lastmile_count=''
                  if(_this.overview){
                      for(let key in _this.overview){
                        if(el.country==key){

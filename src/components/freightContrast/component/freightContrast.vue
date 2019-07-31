@@ -18,7 +18,8 @@
                 <a class="download-template" @click="downloadFile()">{{news.XZMB}}</a>
                 <span class="expresive-template" @click="expreienceTemplate()">{{news.DYYB}}</span>
           </div>
-          <div class="upload-box">
+          <div class="upload-box flexs columns">
+              <p class="file-name" v-show="fileName">{{fileName}}</p>
               <el-upload
                   id="upload-excel"
                   action="upload"
@@ -27,12 +28,15 @@
                   :limit= "1"
                   :on-change="beforeUpload"
                   style="width:100%;">
-                  <i class="el-icon-upload"></i>
-                  <div class="el-upload__text">{{news.DJHJ}}
+                  <i class="el-icon-upload" v-show="!fileName"></i>
+                  <div class="el-upload__text" v-show="!fileName">{{news.DJHJ}}
                       <p>{{news.ZZC}}：xls、xlsx</p>
                   </div>
+                  <div style="font-weight:600;font-size:16px;" v-show="fileName">
+                      <a style="text-decoration:underline;">{{news.ChangeTheFile}}</a>
+                  </div>
               </el-upload>
-              <p class="file-name">{{fileName}}</p>
+              
           </div>
           <div class="submit-btn">
               <el-button type="primary" :loading="loading" @click="newImport()">{{news.KSDB}}</el-button>
@@ -173,7 +177,8 @@ export default {
                 }
             })
         }
-      }
+      },
+      
 }
 
 </script>
@@ -219,6 +224,7 @@ export default {
       margin-top: 20px;
       min-height: 246px;
       background-color: #FCFCFC;
+      position: relative;
     }
     .submit-btn{
       text-align: center;
@@ -236,8 +242,12 @@ export default {
       border: none;
     }
     .file-name{
-        margin-top: 30px;
+        text-align:center;
+        margin:80px auto;
+        font-size: 25px;
         padding: 0 20px;
+        color:#333;
+        font-weight:600;
     }
     .errorItemList{
         margin: 0 auto;
